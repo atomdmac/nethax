@@ -22,6 +22,9 @@ function GAME () {
     
     this.map.addActor(2, 2, this.player);
     
+    // Follow the player.
+    Crafty.viewport.follow(this.player, 0, 0);
+    
     // Methods.
     function tick () {
         // TODO
