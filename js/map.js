@@ -3,11 +3,11 @@ var sampleMap = [
     [0,1,1,1,1,1,1,1,1,0],
     [0,1,1,1,1,1,1,1,1,0],
     [0,1,1,1,1,1,1,1,1,0],
+    [0,1,1,1,0,0,1,1,1,0],
+    [0,1,1,1,0,0,1,1,1,0],
     [0,1,1,1,1,1,1,1,1,0],
-    [0,1,1,1,1,1,1,1,1,0],
-    [0,1,1,1,1,1,1,1,1,0],
-    [0,1,1,1,1,1,1,1,1,0],
-    [0,1,1,1,1,1,1,1,1,0],
+    [0,1,1,1,1,0,0,1,1,0],
+    [0,1,1,1,1,0,0,1,1,0],
     [0,0,0,0,0,0,0,0,0,0]
 ];
 
@@ -45,12 +45,13 @@ Crafty.c("Map", {
     
     parse: function (mapData, cellSize) {
         this.cells = [];
-        for (var x=0; x<mapData[0].length; x++) {
+        for (var x=0; x<mapData.length; x++) {
             this.cells.push(new Array());
             
-            for (var y=0; y<mapData.length; y++) {
+            for (var y=0; y<mapData[x].length; y++) {
+                
                 var newCell = Crafty.e("MapCell");
-                newCell.passable = mapData[x][y] == 0 ? false : true;
+                newCell.passable = mapData[y][x] == 0 ? false : true;
                 newCell.actor = null;
                 newCell.items = []; // TODO: Add items.
                 newCell.attr({
@@ -61,7 +62,7 @@ Crafty.c("Map", {
                 });
                 newCell.update();
                 
-                this.cells[x][y] = newCell;
+                this.cells[x].push(newCell);
             }
         }
     },
