@@ -4,8 +4,22 @@ Crafty.c("Slide", {
     isMoving: false,
     
     checkMovement: function (direction) {
-        var curX = this.x / GAME.settings.cellSize,
-            curY = this.y / GAME.settings.cellSize,
+        var targetPos = this.getTargetCell(direction);
+            newX = targetPos.x,
+            newY = targetPos.y;
+        
+        var targetCell = GAME.map.cells[newX][newY];
+        if(targetCell.passable && targetCell.actor == null) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    getTargetCell: function (direction) {
+        var curCell = GAME.toCell(this.x, this.y),
+            curX = curCell.x,
+            curY = curCell.y,
             newX = curX,
             newY = curY;
             
@@ -25,16 +39,17 @@ Crafty.c("Slide", {
             default:
                 // NONE;
         }
-        
-        var targetCell = GAME.map.cells[newX][newY];
-        if(targetCell.passable && targetCell.actor == null) {
-            return true;
-        } else {
-            return false;
+        return {
+            "x": newX,
+            "y": newY
         }
     },
     
     slide: function (direction) {
+        
+        // Which cell is in the proposed direction?
+        var newCell = this.getTargetCell(direction),
+            oldCell = GAME.toCell(this.x, this.y);
         
         // Make sure movement is valid.
         if(!this.checkMovement(direction)) return;
@@ -70,6 +85,12 @@ Crafty.c("Slide", {
             default:    
                 // NONE.
         }
+        
+        this.trigger("SlideMove", {
+            "direction": direction,
+            "newCell"  : newCell,
+            "oldCell"  : oldCell
+        });
     },
     
     init: function () {
@@ -113,15 +134,20 @@ Crafty.c("KeyMovement", {
 
 Crafty.c("Player", {
     initPlayer: function (x, y, cellSize) {
+        var pos = GAME.toPos(x, y);
         this.attr({
-            "x": x * cellSize,
-            "y": y * cellSize,
-            "w": cellSize,
-            "h": cellSize
+            "x": pos.x,
+            "y": pos.y,
+            "w": GAME.settings.cellSize,
+            "h": GAME.settings.cellSize
         });
         
         // TODO: Use sprite instead of a boring solid color.
-        this.color("#ff0000");
+        this.color("#00ff00");
+    },
+    
+    tick: function () {
+        // EMPTY
     },
     
     init: function () {
@@ -130,5 +156,33 @@ Crafty.c("Player", {
 });
 
 Crafty.c("Enemy", {
-    // TODO
+    randomMove: function () {
+        
+        var directions = ["UP", "DOWN", "RIGHT", "LEFT"],
+            randDir    = directions.random();
+        
+        if (this.checkMovement(randDir)) {
+            this.slide(randDir);
+        }
+    },
+    
+    tick: function () {
+        // TODO: Do other stuff besides just move randomly.
+        this.randomMove();
+    },
+    
+    initEnemy: function (x, y) {
+        var pos = GAME.toPos(x, y);
+        this.color("#ff0000");
+        this.attr({
+            "w": GAME.settings.cellSize,
+            "h": GAME.settings.cellSize,
+            "x": pos.x,
+            "y": pos.y
+        });
+    },
+    
+    init: function () {
+        this.requires("2D, DOM, Color, Slide");
+    }
 })

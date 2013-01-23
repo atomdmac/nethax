@@ -48,6 +48,7 @@ Crafty.c("MapCell", {
 // -----------------------------------------------------------------------------
 Crafty.c("Map", {
     cells: null,
+    actors: null,
     
     load: function (url) {
         // TODO
@@ -87,9 +88,17 @@ Crafty.c("Map", {
     
     addActor: function (x, y, actor) {
         this.cells[x][y].actor = actor;
+        this.actors.push(actor);
+        
+        // Listen for move events so we can update the map.
+        var self = this;
+        actor.bind("SlideMove", function (e) {
+            self.cells[e.oldCell.x][e.oldCell.y].actor = null;
+            self.cells[e.newCell.x][e.newCell.y].actor = this;
+        });
     },
     
     init: function () {
-        // TODO
+        this.actors = [];
     }
 });
