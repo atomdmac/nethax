@@ -51,13 +51,16 @@ function START_GAME () {
     
     // Initialize player.
     GAME.player = Crafty.e("Player");
+    GAME.player.bind("PlayerAction", function (action) {
+        GAME.tick();
+    });
     GAME.map.addActor(2, 2, GAME.player);
     
     // ----------- //
     // DEBUG       //
     // ----------- /
     var e1 = Crafty.e("Enemy");
-    GAME.map.addActor(4, 4, e1);
+    GAME.map.addActor(4, 3, e1);
     
     var e2 = Crafty.e("Enemy");
     GAME.map.addActor(4, 6, e2);
@@ -66,5 +69,5 @@ function START_GAME () {
     GAME.map.addActor(4, 2, e3);
     
     // Follow the player.
-    Crafty.viewport.follow(this.player, 0, 0);
+    Crafty.viewport.follow(GAME.player, 0, 0);
 }

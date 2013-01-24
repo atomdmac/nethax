@@ -51,8 +51,10 @@ Crafty.c("Slide", {
         var newCell = this.getTargetCell(direction),
             oldCell = GAME.toCell(this.x, this.y);
         
-        // Make sure movement is valid.
-        if(!this.checkMovement(direction)) return;
+        // Make sure movement is valid. If not, return false.
+        if(!this.checkMovement(direction)) {
+            return false;
+        }
         
         // We're moving now.
         this.isMoving = true;
@@ -91,6 +93,9 @@ Crafty.c("Slide", {
             "newCell"  : newCell,
             "oldCell"  : oldCell
         });
+        
+        // Slide was successful.
+        return true;
     },
     
     init: function () {
@@ -126,20 +131,27 @@ Crafty.c("KeyMovement", {
                 return;
             }
             
+            var action = null;
+            
             if(this.isDown(Crafty.keys["UP_ARROW"])) {
-                this.slide("UP");
+                action = this.slide("UP") ? "move" : null;
             }
             
             else if(this.isDown(Crafty.keys["DOWN_ARROW"])) {
-                this.slide("DOWN");
+                action = this.slide("DOWN") ? "move" : null;
             }
             
             else if(this.isDown(Crafty.keys["LEFT_ARROW"])) {
-                this.slide("LEFT");
+                action = this.slide("LEFT") ? "move" : null;
             }
             
             else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
-                this.slide("RIGHT");
+                action = this.slide("RIGHT") ? "move" : null;
+            }
+            
+            // Tick if player took a valid action.
+            if(action != null) {
+                this.trigger("PlayerAction", action);
             }
         });
     }
@@ -189,15 +201,12 @@ Crafty.c("Enemy", {
         var directions = ["UP", "DOWN", "RIGHT", "LEFT"],
             randDir    = directions.random();
         
-        console.log("Random Direction: ", randDir);
-        
         if (this.checkMovement(randDir)) {
             this.slide(randDir);
         }
     },
     
     tick: function () {
-        console.log("tick!");
         // TODO: Do other stuff besides just move randomly.
         this.randomMove();
     },
