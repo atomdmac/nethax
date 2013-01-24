@@ -40,6 +40,11 @@ function START_GAME () {
         }
     }
     
+    // Use jQuery's proxy but expose through the GAME object so we can implement
+    // our own later if we want to.  Eventually, it would be nice not to -have-
+    // to rely on jQuery...
+    GAME.proxy = $.proxy;
+    
     // Initialize map.
     GAME.map = Crafty.e("Map");
     GAME.map.parse(sampleMap, settings.cellSize);

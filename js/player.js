@@ -95,18 +95,28 @@ Crafty.c("Slide", {
     
     init: function () {
         this.requires("2D, Tween");
-        
-        var self = this;
-        this.bind("TweenEnd", function () {
-            self.isMoving = false;
-        });
     }
 });
 
 Crafty.c("KeyMovement", {
+    
+    /**
+     * Listen for when the turn animation finishes and allow the player to take
+     * another turn.
+     */
+    _onTurnEnd: function () {
+        this.isMoving = false;
+    },
+    
     init: function () {
+        // Dependencies.
         this.requires("Keyboard, Slide");
         
+        // Listen for the turn to end so we can allow the player to take another
+        // turn.
+        this.bind("TweenEnd", GAME.proxy(this._onTurnEnd, this));
+        
+        // Listen for input on every frame.
         this.bind("EnterFrame", function () {
             // Don't initiate movement if we're already moving.
             if (this.isMoving) {
