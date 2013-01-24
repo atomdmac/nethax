@@ -198,15 +198,16 @@ Crafty.c("Player", {
 Crafty.c("Enemy", {
     randomMove: function () {
         
-        var directions = ["UP", "DOWN", "RIGHT", "LEFT"],
+        // TODO: Find a better way to generate random directions.  This way favors the middle two items. :(
+        var directions = ["DOWN", "UP", "RIGHT", "LEFT"],
             randDir    = directions.random();
         
         if (this.checkMovement(randDir)) {
-            var isSliding = this.slide(randDir);
-            if (isSliding) {
-                // Update stats.
-                GAME.stats.enemyMoves[randDir.toLowerCase()]++;
-            }
+            // Move!
+            this.slide(randDir);
+            
+            // Update stats.
+            GAME.stats.enemyMoves[randDir.toLowerCase()]++;
         }
     },
     
