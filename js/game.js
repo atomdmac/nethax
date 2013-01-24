@@ -11,6 +11,16 @@ function START_GAME () {
     // Expose settings object through GAME object.
     GAME.settings = settings;
     
+    // A place to store statistics.
+    GAME.stats = {
+        enemyMoves: {
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0
+        }
+    };
+    
     // Init Crafty engine.
     var initW = settings.viewW * settings.cellSize,
         initH = settings.viewH * settings.cellSize;

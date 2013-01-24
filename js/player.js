@@ -202,7 +202,11 @@ Crafty.c("Enemy", {
             randDir    = directions.random();
         
         if (this.checkMovement(randDir)) {
-            this.slide(randDir);
+            var isSliding = this.slide(randDir);
+            if (isSliding) {
+                // Update stats.
+                GAME.stats.enemyMoves[randDir.toLowerCase()]++;
+            }
         }
     },
     
