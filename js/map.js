@@ -90,6 +90,9 @@ Crafty.c("Map", {
         this.cells[x][y].actor = actor;
         this.actors.push(actor);
         
+        // Initialize the actor.
+        actor.mapEntity(x, y);
+        
         // Listen for move events so we can update the map.
         var self = this;
         actor.bind("SlideMove", function (e) {

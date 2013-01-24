@@ -98,6 +98,9 @@ Crafty.c("Slide", {
     }
 });
 
+// -----------------------------------------------------------------------------
+// Key Movement Entity
+// -----------------------------------------------------------------------------
 Crafty.c("KeyMovement", {
     
     /**
@@ -142,8 +145,11 @@ Crafty.c("KeyMovement", {
     }
 });
 
-Crafty.c("Player", {
-    initPlayer: function (x, y, cellSize) {
+// -----------------------------------------------------------------------------
+// Map Entity (Players, Items, etc.)
+// -----------------------------------------------------------------------------
+Crafty.c("MapEntity", {
+    mapEntity: function (x, y) {
         var pos = GAME.toPos(x, y);
         this.attr({
             "x": pos.x,
@@ -151,25 +157,39 @@ Crafty.c("Player", {
             "w": GAME.settings.cellSize,
             "h": GAME.settings.cellSize
         });
-        
-        // TODO: Use sprite instead of a boring solid color.
-        this.color("#00ff00");
     },
+    
+    init: function () {
+        // TODO
+    }
+});
+
+// -----------------------------------------------------------------------------
+// Player Entity
+// -----------------------------------------------------------------------------
+Crafty.c("Player", {
     
     tick: function () {
         // EMPTY
     },
     
     init: function () {
-        this.requires("2D, DOM, Color, KeyMovement");
+        this.requires("2D, DOM, Color, MapEntity, KeyMovement");
+        // TODO: Use sprite instead of a boring solid color.
+        this.color("#00ff00");
     }
 });
 
+// -----------------------------------------------------------------------------
+// Enemy Entity
+// -----------------------------------------------------------------------------
 Crafty.c("Enemy", {
     randomMove: function () {
         
         var directions = ["UP", "DOWN", "RIGHT", "LEFT"],
             randDir    = directions.random();
+        
+        console.log("Random Direction: ", randDir);
         
         if (this.checkMovement(randDir)) {
             this.slide(randDir);
@@ -177,22 +197,13 @@ Crafty.c("Enemy", {
     },
     
     tick: function () {
+        console.log("tick!");
         // TODO: Do other stuff besides just move randomly.
         this.randomMove();
     },
     
-    initEnemy: function (x, y) {
-        var pos = GAME.toPos(x, y);
-        this.color("#ff0000");
-        this.attr({
-            "w": GAME.settings.cellSize,
-            "h": GAME.settings.cellSize,
-            "x": pos.x,
-            "y": pos.y
-        });
-    },
-    
     init: function () {
-        this.requires("2D, DOM, Color, Slide");
+        this.requires("2D, DOM, Color, MapEntity, Slide");
+        this.color("#ff0000");
     }
 })
