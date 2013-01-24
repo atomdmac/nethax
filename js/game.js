@@ -3,8 +3,8 @@ function START_GAME () {
     
     // Settings.
     var settings = {
-        viewW: 10,
-        viewH: 10,
+        viewW: 20,
+        viewH: 20,
         cellSize: 16
     };
     
