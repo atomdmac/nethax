@@ -171,6 +171,10 @@ Crafty.c("KeyMovement", {
                 // If there's an enemy there, attempt to hit 'em.
                 if (enemy != null) {
                     this.attack(enemy);
+                    
+                    // TODO: Replace isMoving with a more generic "turnTimeout" term and decouple from Slide component.
+                    this.isMoving = true;
+                    this.tween({x:this._x}, 10);
                 }
             }
             
@@ -232,7 +236,9 @@ Crafty.c("MapEntity", {
     }
 });
 
-// A Character.
+// -----------------------------------------------------------------------------
+// A Character that can advance in skill.
+// -----------------------------------------------------------------------------
 Crafty.c("Character", {
     
     // Is this character a non-player character?
@@ -256,7 +262,9 @@ Crafty.c("Character", {
     }
 });
 
-// And entity that can attack and do damage to an Attackable entity.
+// -----------------------------------------------------------------------------
+// An entity that can attack and do damage to an Attackable entity.
+// -----------------------------------------------------------------------------
 Crafty.c("Attacker", {
     attack: function (target) {
         if (target.has("Attackable")) {
@@ -268,8 +276,6 @@ Crafty.c("Attacker", {
                 // TODO: Factor in character attributes to determine die type/number.
                 var dmg = GAME.roll(6, 2);
                 target.damage(dmg);
-                
-                GAME.log(this.name(), " hits ", target.name(), " for ", dmg, " damage!");
             }
             
             // Attack misses.
@@ -288,7 +294,9 @@ Crafty.c("Attacker", {
     }
 });
 
+// -----------------------------------------------------------------------------
 // An entity that can be attacked and killed/broken.
+// -----------------------------------------------------------------------------
 Crafty.c("Attackable", {
     hit: function (check) {
         if (check > this._armor) {
