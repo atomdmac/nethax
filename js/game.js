@@ -2,14 +2,11 @@ function START_GAME () {
     GAME = {};
     
     // Settings.
-    var settings = {
+    GAME.settings = {
         viewW: 20,
         viewH: 20,
         cellSize: 16
     };
-    
-    // Expose settings object through GAME object.
-    GAME.settings = settings;
     
     // A place to store statistics.
     GAME.stats = {
@@ -27,7 +24,13 @@ function START_GAME () {
     
     Crafty.init(initW, initH);
     
+    // -------------------------------------------------------------------------
     // Public Methods.
+    // -------------------------------------------------------------------------
+    
+    /*
+     * Advance the game by one time unit.  Runs whenever the user takes a turn.
+     */
     GAME.tick = function () {
         // Update all actors.
         var actors = GAME.map.actors;
@@ -36,6 +39,17 @@ function START_GAME () {
         }
     }
     
+    /*
+     * Add an entry to the log for the user to see.
+     */
+    GAME.log = function (msg) {
+        // TODO: Implement a proper log in the DOM instead of console.log().
+        console.log(msg);
+    }
+    
+    /*
+     * Convert pixel position to grid position.
+     */
     GAME.toCell  = function (x, y) {
         return {
             "x": Math.floor(x / GAME.settings.cellSize),
@@ -43,10 +57,24 @@ function START_GAME () {
         }
     }
     
+    /*
+     * Convert grid position to pixel position.
+     */
     GAME.toPos = function (x, y) {
         return {
             "x": Math.floor(x * GAME.settings.cellSize),
             "y": Math.floor(y * GAME.settings.cellSize)
+        }
+    }
+    
+    /*
+     * Roll the given dice type (type) the given number of times (num)
+     */
+    GAME.roll = function (type, num) {
+        var total = 0;
+        for (var i=0; i<num; i++) {
+            // NOTE: See Math.randomInt() in js/utils.js.
+            total += Math.randomInt(type + 1);
         }
     }
     
