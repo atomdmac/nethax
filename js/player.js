@@ -1,3 +1,56 @@
+// -----------------------------------------------------------------------------
+// Map Entity (Players, Items, etc.)
+// -----------------------------------------------------------------------------
+Crafty.c("MapEntity", {
+    // Entity's name.
+    _name: "Entity Name",
+    name: function (name) {
+        if (typeof name === "string") {
+            this._name = name;
+        }
+        return this._name;
+    },
+    
+    checkSurrounding: function (direction) {
+        var dirs = {
+            "UP"    : [0, -1],
+            "RIGHT" : [1,  0],
+            "DOWN"  : [0,  1],
+            "LEFT"  : [-1, 0]
+        };
+        if (dirs[direction] !== undefined) {
+            // Determine the location of the target cell.
+            var pos = GAME.toCell(this._x, this._y);
+            pos.x += dirs[direction][0];
+            pos.y += dirs[direction][1];
+            
+            // Get a reference to the target cell (if it exists).
+            var targetCell = GAME.map.getCell(pos.x, pos.y);
+            
+            return targetCell;
+        } else {
+            return null;
+        }
+    },
+    
+    mapEntity: function (x, y) {
+        var pos = GAME.toPos(x, y);
+        this.attr({
+            "x": pos.x,
+            "y": pos.y,
+            "w": GAME.settings.cellSize,
+            "h": GAME.settings.cellSize
+        });
+    },
+    
+    init: function () {
+        this.requires("2D");
+    }
+});
+
+// -----------------------------------------------------------------------------
+// Animate movement between turns.
+// -----------------------------------------------------------------------------
 Crafty.c("Slide", {
     moveSpeed: 10,
     cellSize: null,
@@ -183,56 +236,6 @@ Crafty.c("KeyMovement", {
                 this.trigger("PlayerAction", action);
             }
         });
-    }
-});
-
-// -----------------------------------------------------------------------------
-// Map Entity (Players, Items, etc.)
-// -----------------------------------------------------------------------------
-Crafty.c("MapEntity", {
-    // Entity's name.
-    _name: "Entity Name",
-    name: function (name) {
-        if (typeof name === "string") {
-            this._name = name;
-        }
-        return this._name;
-    },
-    
-    checkSurrounding: function (direction) {
-        var dirs = {
-            "UP"    : [0, -1],
-            "RIGHT" : [1,  0],
-            "DOWN"  : [0,  1],
-            "LEFT"  : [-1, 0]
-        };
-        if (dirs[direction] !== undefined) {
-            // Determine the location of the target cell.
-            var pos = GAME.toCell(this._x, this._y);
-            pos.x += dirs[direction][0];
-            pos.y += dirs[direction][1];
-            
-            // Get a reference to the target cell (if it exists).
-            var targetCell = GAME.map.getCell(pos.x, pos.y);
-            
-            return targetCell;
-        } else {
-            return null;
-        }
-    },
-    
-    mapEntity: function (x, y) {
-        var pos = GAME.toPos(x, y);
-        this.attr({
-            "x": pos.x,
-            "y": pos.y,
-            "w": GAME.settings.cellSize,
-            "h": GAME.settings.cellSize
-        });
-    },
-    
-    init: function () {
-        this.requires("2D");
     }
 });
 
