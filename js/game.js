@@ -19,8 +19,8 @@ function START_GAME () {
     };
     
     // Init Crafty engine.
-    var initW = settings.viewW * settings.cellSize,
-        initH = settings.viewH * settings.cellSize;
+    var initW = GAME.settings.viewW * GAME.settings.cellSize,
+        initH = GAME.settings.viewH * GAME.settings.cellSize;
     
     Crafty.init(initW, initH);
     
@@ -42,9 +42,13 @@ function START_GAME () {
     /*
      * Add an entry to the log for the user to see.
      */
+    // TODO: Implement a proper log in the DOM instead of console.log().
     GAME.log = function (msg) {
-        // TODO: Implement a proper log in the DOM instead of console.log().
-        console.log(msg);
+        var output = "";
+        for (var i in arguments) {
+            output += arguments[i];
+        }
+        console.log(output);
     }
     
     /*
@@ -74,8 +78,9 @@ function START_GAME () {
         var total = 0;
         for (var i=0; i<num; i++) {
             // NOTE: See Math.randomInt() in js/utils.js.
-            total += Math.randomInt(type + 1);
+            total += Math.randomInt(1, type);
         }
+        return total;
     }
     
     // Use jQuery's proxy but expose through the GAME object so we can implement
@@ -85,7 +90,7 @@ function START_GAME () {
     
     // Initialize map.
     GAME.map = Crafty.e("Map");
-    GAME.map.parse(sampleMap, settings.cellSize);
+    GAME.map.parse(sampleMap, GAME.settings.cellSize);
     
     // Initialize player.
     GAME.player = Crafty.e("Player");

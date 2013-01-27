@@ -93,12 +93,22 @@ Crafty.c("Map", {
         // Initialize the actor.
         actor.mapEntity(x, y);
         
+        // Remove the actor when it dies.
+        actor.bind("Die", function (actor) {
+            var cellPos = GAME.toCell(actor.x, actor.y);
+            self.cells[cellPos.x][cellPos.y].actor = null;
+        });
+        
         // Listen for move events so we can update the map.
         var self = this;
         actor.bind("SlideMove", function (e) {
             self.cells[e.oldCell.x][e.oldCell.y].actor = null;
             self.cells[e.newCell.x][e.newCell.y].actor = this;
         });
+    },
+    
+    getCell: function (x, y) {
+        return this.cells[x][y];
     },
     
     init: function () {

@@ -133,6 +133,7 @@ Crafty.c("KeyMovement", {
             
             var action = null;
             
+            // Movement
             if(this.isDown(Crafty.keys["UP_ARROW"])) {
                 action = this.slide("UP") ? "move" : null;
             }
@@ -149,6 +150,30 @@ Crafty.c("KeyMovement", {
                 action = this.slide("RIGHT") ? "move" : null;
             }
             
+            // Attack.
+            // TODO: Clean up key input code.  This is gross.
+            var enemy = null;
+            if (action == null) {
+                // Is there an enemy there?
+                if(this.isDown(Crafty.keys["UP_ARROW"])) {
+                    enemy = this.checkSurrounding("UP").actor;
+                }
+                else if(this.isDown(Crafty.keys["DOWN_ARROW"])) {
+                    enemy = this.checkSurrounding("DOWN").actor;
+                }
+                else if(this.isDown(Crafty.keys["LEFT_ARROW"])) {
+                    enemy = this.checkSurrounding("LEFT").actor;
+                }
+                else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
+                    enemy = this.checkSurrounding("RIGHT").actor;
+                }
+                
+                // If there's an enemy there, attempt to hit 'em.
+                if (enemy != null) {
+                    this.attack(enemy);
+                }
+            }
+            
             // Tick if player took a valid action.
             if(action != null) {
                 this.trigger("PlayerAction", action);
@@ -161,6 +186,37 @@ Crafty.c("KeyMovement", {
 // Map Entity (Players, Items, etc.)
 // -----------------------------------------------------------------------------
 Crafty.c("MapEntity", {
+    // Entity's name.
+    _name: "Entity Name",
+    name: function (name) {
+        if (typeof name === "string") {
+            this._name = name;
+        }
+        return this._name;
+    },
+    
+    checkSurrounding: function (direction) {
+        var dirs = {
+            "UP"    : [0, -1],
+            "RIGHT" : [1,  0],
+            "DOWN"  : [0,  1],
+            "LEFT"  : [-1, 0]
+        };
+        if (dirs[direction] !== undefined) {
+            // Determine the location of the target cell.
+            var pos = GAME.toCell(this._x, this._y);
+            pos.x += dirs[direction][0];
+            pos.y += dirs[direction][1];
+            
+            // Get a reference to the target cell (if it exists).
+            var targetCell = GAME.map.getCell(pos.x, pos.y);
+            
+            return targetCell;
+        } else {
+            return null;
+        }
+    },
+    
     mapEntity: function (x, y) {
         var pos = GAME.toPos(x, y);
         this.attr({
@@ -169,6 +225,121 @@ Crafty.c("MapEntity", {
             "w": GAME.settings.cellSize,
             "h": GAME.settings.cellSize
         });
+    },
+    
+    init: function () {
+        this.requires("2D");
+    }
+});
+
+// A Character.
+Crafty.c("Character", {
+    
+    // Is this character a non-player character?
+    _isNPC: false,
+    
+    // Character stats/attributes.
+    stats: {
+        "dex": 0,
+        "str": 0,
+        "wis": 0,
+        "int": 0
+    },
+    
+    exp: function (toAdd) {
+        // TODO
+    },
+    
+    init: function () {
+        // Dependencies.
+        this.requires("MapEntity");
+    }
+});
+
+// And entity that can attack and do damage to an Attackable entity.
+Crafty.c("Attacker", {
+    attack: function (target) {
+        if (target.has("Attackable")) {
+            // TODO: Factor in character attributes to determine die type/number.
+            var check = GAME.roll(6, 2);
+            
+            // Is the attack successful?
+            if (target.hit(check)) {
+                // TODO: Factor in character attributes to determine die type/number.
+                var dmg = GAME.roll(6, 2);
+                target.damage(dmg);
+                
+                GAME.log(this.name(), " hits ", target.name(), " for ", dmg, " damage!");
+            }
+            
+            // Attack misses.
+            else {
+                GAME.log("You miss!");
+            }
+        }
+        
+        else {
+            GAME.log("You can't attack that.");
+        }
+    },
+    
+    init: function () {
+        this.requires("MapEntity");
+    }
+});
+
+// An entity that can be attacked and killed/broken.
+Crafty.c("Attackable", {
+    hit: function (check) {
+        if (check > this._armor) {
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    /*
+     * Do damage to this entity.  Entity will die/break if HP falls below 0.
+     */
+    damage: function (amount) {
+        // TODO: Add damage reduction someday...
+        GAME.log(this.name(), " takes ", amount, " damage.");
+        
+        this._hp -= amount;
+        if(this._hp < 0) {
+            this.die();
+        }
+    },
+    
+    /*
+     * Kills/breaks the entity.
+     */
+    die: function () {
+        this.trigger("Die", this);
+        this.destroy();
+        GAME.log(this.name(), " dies.");
+    },
+    
+    /*
+     * Get/Set the Armor Class for this entity.
+     */
+    _armor: 5,
+    armor: function (num) {
+        if(num!==undefined) {
+            this._armor = num;
+        }
+        return this._armor;
+    },
+    
+    /*
+     * Get/Set max Hit Points for this entity.
+     */
+    _hp: 10,
+    hp: function (num) {
+        if(num!==undefined) {
+            this._hp = num;
+        }
+        return this._hp;
     },
     
     init: function () {
@@ -186,7 +357,8 @@ Crafty.c("Player", {
     },
     
     init: function () {
-        this.requires("2D, DOM, Color, MapEntity, KeyMovement");
+        this.requires("2D, DOM, Color, MapEntity, Character, KeyMovement, Attackable, Attacker");
+        this.name("You");
         // TODO: Use sprite instead of a boring solid color.
         this.color("#00ff00");
     }
@@ -217,7 +389,8 @@ Crafty.c("Enemy", {
     },
     
     init: function () {
-        this.requires("2D, DOM, Color, MapEntity, Slide");
+        this.requires("2D, DOM, Color, Character, Slide, Attackable, Attacker");
+        this.name("Enemy");
         this.color("#ff0000");
     }
 })
