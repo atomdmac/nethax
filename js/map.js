@@ -138,7 +138,6 @@ Crafty.c("Map", {
 // -----------------------------------------------------------------------------
     
     getCell: function (x, y) {
-        // TODO: Check whether cell is in bounds or not.
         return this.cells[x][y];
     },
     
@@ -150,14 +149,39 @@ Crafty.c("Map", {
      * check is made.
      */
     inBounds: function (x, y, convert) {
-        // TODO
+        // Negative numbers are never allowed.
+        if(x<0 || y<0) {
+            return false;
+        }
+        var pos;
+        if(convert) {
+            pos = this.toCell(x, y);
+        } else {
+            pos = {
+                "x": x,
+                "y": y
+            }
+        }
+        if(this.cells.length > x || this.cells[0].length > y) {
+            return false;
+        }
+        // Passed all checks.  Looks good! <thumbsup/>
+        return true;
     },
     
     /**
      * Return TRUE if cell contains impassable terrain or entities.
      */
     isCollidable: function (x, y) {
-        // TODO
+        if(this.inBounds(x, y)) {
+            var c = this.cells[x][y];
+            if(c.actors.length > 0 || c.passable == false) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     },
     
     /**
@@ -203,7 +227,16 @@ Crafty.c("Map", {
      * Return the distance between 2 entities on the map.
      */
     getDistance: function (target1, target2) {
-        // TODO
+        // Targets must be map entities.
+        if(target1.has("MapEntity") && target2.has("MapEntity")) {
+            var cell1 = this.toCell(target1.x, target1.y),
+                cell2 = this.toCell(target2.x, target2.y),
+                xdiff = Math.abs(cell1.x - cell2.x),
+                ydiff = Math.abs(cell1.y - cell2.y);
+            // Go, Pythagorean Thereom!
+            return Math.ceil(Math.sqrt((xdiff*xdiff) + (ydiff*ydiff)));
+        }
+        return null;
     },
     
     init: function () {
