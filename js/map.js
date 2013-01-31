@@ -47,8 +47,19 @@ Crafty.c("MapCell", {
 // Map Component
 // -----------------------------------------------------------------------------
 Crafty.c("Map", {
+    // Some constants.
+    // TODO: Convert directions to NWSE instead.
+    UP    : [0, -1],
+    RIGHT : [1,  0],
+    DOWN  : [0,  1],
+    LEFT  : [-1, 0],
+    
     cells: null,
     actors: null,
+    
+// -----------------------------------------------------------------------------
+// Map I/O
+// -----------------------------------------------------------------------------
     
     load: function (url) {
         // TODO
@@ -78,12 +89,23 @@ Crafty.c("Map", {
         }
     },
     
+// -----------------------------------------------------------------------------
+// Rendering
+// -----------------------------------------------------------------------------
+    
     repaint: function (x, y) {
         this.cells[x][y].update();
     },
     
+// -----------------------------------------------------------------------------
+// Entity Management
+// -----------------------------------------------------------------------------
     addItem: function (x, y, item) {
         this.cells[x][y].items.push(item);
+    },
+    
+    removeItem: function (item) {
+        // TODO
     },
     
     addActor: function (x, y, actor) {
@@ -107,8 +129,81 @@ Crafty.c("Map", {
         });
     },
     
+    removeActor: function (actor) {
+        // TODO:  Currently handled in "Die" callback.
+    },
+
+// -----------------------------------------------------------------------------
+// Map Query Tools
+// -----------------------------------------------------------------------------
+    
     getCell: function (x, y) {
+        // TODO: Check whether cell is in bounds or not.
         return this.cells[x][y];
+    },
+    
+    /**
+     * Check to see if the given position is within the bounderies of the map.
+     * If /convert/ is FALSE or unspecified, the given x/y parameters are
+     * treated as CELL positions.  If /convert/ is TRUE, the given position is
+     * specified in pixels and will be converted to cell positions before the
+     * check is made.
+     */
+    inBounds: function (x, y, convert) {
+        // TODO
+    },
+    
+    /**
+     * Return TRUE if cell contains impassable terrain or entities.
+     */
+    isCollidable: function (x, y) {
+        // TODO
+    },
+    
+    /**
+     * Convert cell position to pixels.
+     */
+    toPos: function (x, y) {
+        return {
+            "x": Math.floor(x * GAME.settings.cellSize),
+            "y": Math.floor(y * GAME.settings.cellSize)
+        }
+    },
+    
+    /**
+     * Convert pixel position to cell position.
+     */
+    toCell: function (x, y) {
+        return {
+            "x": Math.floor(x / GAME.settings.cellSize),
+            "y": Math.floor(y / GAME.settings.cellSize)
+        }
+    },
+    
+    /**
+     * Return the adjacent cell in the given direction (N/W/S/E).
+     */
+    getAdjacent: function (target, direction) {
+        if (this[direction] !== undefined) {
+            // Determine the location of the target cell.
+            var pos = GAME.toCell(this._x, this._y);
+            pos.x += this[direction][0];
+            pos.y += this[direction][1];
+            
+            // Get a reference to the target cell (if it exists).
+            var targetCell = GAME.map.getCell(pos.x, pos.y);
+            
+            return targetCell;
+        } else {
+            return null;
+        }
+    },
+    
+    /**
+     * Return the distance between 2 entities on the map.
+     */
+    getDistance: function (target1, target2) {
+        // TODO
     },
     
     init: function () {
