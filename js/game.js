@@ -37,6 +37,15 @@ function START_GAME () {
         for (var i=0; i<actors.length; i++) {
             actors[i].tick();
         }
+        
+        // DEBUG //
+        // Test DDA functions.
+        var c1 = GAME.map.toPos(1, 1);
+        var c2 = GAME.map.toPos(4, 10);
+        var ddaPath = GAME.map.dda(c1.x, c1.y, c2.x, c2.y);
+        for(var dda=0; dda<ddaPath.length; dda++) {
+            ddaPath[dda].color("#ccc");
+        }
     }
     
     /*
@@ -89,7 +98,7 @@ function START_GAME () {
     GAME.proxy = $.proxy;
     
     // Initialize map.
-    GAME.map = Crafty.e("Map");
+    GAME.map = Crafty.e("DDAMap");
     GAME.map.parse(sampleMap, GAME.settings.cellSize);
     
     // Initialize player.

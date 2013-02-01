@@ -4,20 +4,19 @@
  * @author playchilla.com
  */
 Crafty.c("DDAMap", {
-    dda: function (x1, y1, x2, y2) {
-        var pix1     = this.toPos(x1, y1, true),
-            pix2     = this.toPos(x2, y2, true),
-            // gridPos  = map.pos2cell(pix1.x, pix1.y);
-            gridPosX = x1, // Math.round(pix1.x / _cellSizeX),
-            gridPosY = y1; // Math.round(pix1.y / _cellSizeY);
-        
+    dda: function (x1, y1, x2, y2, max) {
+        var gridPos = this.toCell(x1, y1);
+            gridPosX = gridPos.x, // Math.round(x1 / this._cellSize),
+            gridPosY = gridPos.y; // Math.round(y1 / this._cellSize);
+            max = max !== undefined ? max : 200;
+
         // Cell contents collidable?
-        if (this.isCollidable(x1, y1)) {
+        if (this.isCollidable(gridPosX, gridPosY)) {
             return [];
         }
         
-        var dirX = pix2.x - pix1.x;
-        var dirY = pix2.y - pix1.y;
+        var dirX = x2 - x1;
+        var dirY = y2 - y1;
         var distSqr = dirX * dirX + dirY * dirY;
         if (distSqr < 0.00000001) {
             return [];
@@ -30,8 +29,8 @@ Crafty.c("DDAMap", {
         var deltaX = this._cellSize / Math.abs(dirX);
         var deltaY = this._cellSize / Math.abs(dirY);
 
-        var maxX = gridPosX * this._cellSize - pix1.x;
-        var maxY = gridPosY * this._cellSize - pix1.y;
+        var maxX = gridPosX * this._cellSize - x1;
+        var maxY = gridPosY * this._cellSize - y1;
         if (dirX >= 0) maxX += this._cellSize;
         if (dirY >= 0) maxY += this._cellSize;
         maxX /= dirX;
@@ -39,21 +38,14 @@ Crafty.c("DDAMap", {
 
         var stepX = dirX < 0 ? -1 : 1;
         var stepY = dirY < 0 ? -1 : 1;
-        var gridGoalX = x2; //Math.floor(pix2.x / this._cellSize);
-        var gridGoalY = y2; //Math.floor(pix2.y / this._cellSize);
+        var gridGoalX = Math.floor(x2 / this._cellSize);
+        var gridGoalY = Math.floor(y2 / this._cellSize);
         
         var cellList = new Array();
         
-        var safety = 0;
-        while (gridPosX != gridGoalX || gridPosY != gridGoalY) {
-            
-            // TODO: Remove loop safety mechanism.
-            // Safety, since we're early days with this loop yet...
-            if(safety > 200) {
-                break;
-            }
-            safety++;
-            
+        while (gridPosX != gridGoalX ||
+               gridPosY != gridGoalY ||
+               max > cellList.length) {
             if (maxX < maxY) {
                 maxX += deltaX;
                 gridPosX += stepX;
@@ -63,11 +55,11 @@ Crafty.c("DDAMap", {
                 gridPosY += stepY;
             }
             
-            // Cell is out of bounds.  Return cell list.
+            // Out of bounds.  Return cell list.
             if (!this.inBounds(gridPosX, gridPosY)) {
                 return cellList;
             }
-
+            
             // Collision found.  Return cell list.
             if (this.isCollidable(gridPosX, gridPosY)) {
                 return cellList;
@@ -75,18 +67,11 @@ Crafty.c("DDAMap", {
             
             // No collision found.  Add cell to list.
             else {
-                /*
-                 cellList.push({
-                    "x": gridPosX,
-                    "y": gridPosY,
-                    "type": "path"
-                });
-                */
                 cellList.push(this.getCell(gridPosX, gridPosY));
             }
         }
         
-        // No more collisions found.  Return cells.
+        // No collisions found.  Return cells.
         return cellList;
     },
     

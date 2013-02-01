@@ -28,6 +28,8 @@ Crafty.c("MapCell", {
     passable: false,
     actor: null,
     items: [],
+    width: null,
+    height: null,
     
     update: function () {
         if (this.passable) {
@@ -56,6 +58,10 @@ Crafty.c("Map", {
     
     cells: null,
     actors: null,
+    
+    _width: null,
+    _height: null,
+    _cellSize: null,
     
 // -----------------------------------------------------------------------------
 // Map I/O
@@ -87,6 +93,9 @@ Crafty.c("Map", {
                 this.cells[x].push(newCell);
             }
         }
+        this._cellSize = cellSize;
+        this._width = this.cells.length;
+        this._height = this.cells[0].length;
     },
     
 // -----------------------------------------------------------------------------
@@ -162,7 +171,7 @@ Crafty.c("Map", {
                 "y": y
             }
         }
-        if(this.cells.length > x || this.cells[0].length > y) {
+        if(this._width < x || this._height < y) {
             return false;
         }
         // Passed all checks.  Looks good! <thumbsup/>
@@ -175,7 +184,9 @@ Crafty.c("Map", {
     isCollidable: function (x, y) {
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
-            if(c.actors.length > 0 || c.passable == false) {
+            console.log(x, y, c);
+            console.log(c.actor, c.passable);
+            if(c.actor != null || c.passable == false) {
                 return true;
             } else {
                 return false;
@@ -185,13 +196,19 @@ Crafty.c("Map", {
     },
     
     /**
-     * Convert cell position to pixels.
+     * Convert cell position to pixels. If /center/ is TRUE, return the position
+     * of the center of the given cell.
      */
-    toPos: function (x, y) {
-        return {
+    toPos: function (x, y, center) {
+        var pos = {
             "x": Math.floor(x * GAME.settings.cellSize),
             "y": Math.floor(y * GAME.settings.cellSize)
         }
+        if (center) {
+            pos.x += this._cellSize / 2;
+            pos.y += this._cellSize / 2;
+        }
+        return pos;
     },
     
     /**
@@ -224,6 +241,17 @@ Crafty.c("Map", {
     },
     
     /**
+     * Return a list of interesting cells adjacent to the given target.
+     * An interesting cell:
+     * - Contains an item
+     * - Contains a wall or impassable terrain.
+     * - Contains an entity.
+     */
+    getInteresting: function (target) {
+        // TODO
+    },
+    
+    /**
      * Return the distance between 2 entities on the map.
      */
     getDistance: function (target1, target2) {
@@ -241,5 +269,10 @@ Crafty.c("Map", {
     
     init: function () {
         this.actors = [];
+        
+        // Getters
+        this.__defineGetter__("width", function() {return this._width});
+        this.__defineGetter__("height", function() {return this._height});
+        this.__defineGetter__("cellSize", function() {return this._cellSize});
     }
 });
