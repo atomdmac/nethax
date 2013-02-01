@@ -3,22 +3,21 @@
  *
  * @author playchilla.com
  */
-var DDA = function(cellSizeX, cellSizeY) {
-    var _cellSizeX = cellSizeX,
-        _cellSizeY = cellSizeY;
-
-    function run(x1, y1, x2, y2, map) {
-        var gridPos = map.pos2cell(x1, y1);
-            gridPosX = gridPos.x, // Math.round(x1 / _cellSizeX),
-            gridPosY = gridPos.y; // Math.round(y1 / _cellSizeY);
-
+Crafty.c("DDAMap", {
+    dda: function (x1, y1, x2, y2) {
+        var pix1     = this.toPos(x1, y1, true),
+            pix2     = this.toPos(x2, y2, true),
+            // gridPos  = map.pos2cell(pix1.x, pix1.y);
+            gridPosX = x1, // Math.round(pix1.x / _cellSizeX),
+            gridPosY = y1; // Math.round(pix1.y / _cellSizeY);
+        
         // Cell contents collidable?
-        if (map.isCollidable(gridPosX, gridPosY)) {
+        if (this.isCollidable(x1, y1)) {
             return [];
         }
         
-        var dirX = x2 - x1;
-        var dirY = y2 - y1;
+        var dirX = pix2.x - pix1.x;
+        var dirY = pix2.y - pix1.y;
         var distSqr = dirX * dirX + dirY * dirY;
         if (distSqr < 0.00000001) {
             return [];
@@ -28,24 +27,33 @@ var DDA = function(cellSizeX, cellSizeY) {
         dirX *= nf;
         dirY *= nf;
 
-        var deltaX = _cellSizeX / Math.abs(dirX);
-        var deltaY = _cellSizeY / Math.abs(dirY);
+        var deltaX = this._cellSize / Math.abs(dirX);
+        var deltaY = this._cellSize / Math.abs(dirY);
 
-        var maxX = gridPosX * _cellSizeX - x1;
-        var maxY = gridPosY * _cellSizeY - y1;
-        if (dirX >= 0) maxX += _cellSizeX;
-        if (dirY >= 0) maxY += _cellSizeY;
+        var maxX = gridPosX * this._cellSize - pix1.x;
+        var maxY = gridPosY * this._cellSize - pix1.y;
+        if (dirX >= 0) maxX += this._cellSize;
+        if (dirY >= 0) maxY += this._cellSize;
         maxX /= dirX;
         maxY /= dirY;
 
         var stepX = dirX < 0 ? -1 : 1;
         var stepY = dirY < 0 ? -1 : 1;
-        var gridGoalX = Math.floor(x2 / _cellSizeX);
-        var gridGoalY = Math.floor(y2 / _cellSizeY);
+        var gridGoalX = x2; //Math.floor(pix2.x / this._cellSize);
+        var gridGoalY = y2; //Math.floor(pix2.y / this._cellSize);
         
         var cellList = new Array();
         
+        var safety = 0;
         while (gridPosX != gridGoalX || gridPosY != gridGoalY) {
+            
+            // TODO: Remove loop safety mechanism.
+            // Safety, since we're early days with this loop yet...
+            if(safety > 200) {
+                break;
+            }
+            safety++;
+            
             if (maxX < maxY) {
                 maxX += deltaX;
                 gridPosX += stepX;
@@ -54,28 +62,35 @@ var DDA = function(cellSizeX, cellSizeY) {
                 maxY += deltaY;
                 gridPosY += stepY;
             }
+            
+            // Cell is out of bounds.  Return cell list.
+            if (!this.inBounds(gridPosX, gridPosY)) {
+                return cellList;
+            }
 
             // Collision found.  Return cell list.
-            if (map.isCollidable(gridPosX, gridPosY)) {
+            if (this.isCollidable(gridPosX, gridPosY)) {
                 return cellList;
             }
             
             // No collision found.  Add cell to list.
             else {
-                cellList.push({
+                /*
+                 cellList.push({
                     "x": gridPosX,
                     "y": gridPosY,
                     "type": "path"
                 });
+                */
+                cellList.push(this.getCell(gridPosX, gridPosY));
             }
         }
         
-        // No collisions found.  Return cells.
+        // No more collisions found.  Return cells.
         return cellList;
+    },
+    
+    init: function () {
+        this.requires("Map");
     }
-
-    // Return public interface.
-    return {
-        "run": run
-    }
-}
+});
