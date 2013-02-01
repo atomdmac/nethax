@@ -41,7 +41,7 @@ Crafty.c("DDAMap", {
         var gridGoalX = Math.floor(x2 / this._cellSize);
         var gridGoalY = Math.floor(y2 / this._cellSize);
         
-        var cellList = new Array();
+        var cellList = [this.getCell(gridPosX, gridPosY)];
         
         while (gridPosX != gridGoalX ||
                gridPosY != gridGoalY ||
@@ -71,8 +71,33 @@ Crafty.c("DDAMap", {
             }
         }
         
+        // Add destination cell (if it's not collidable)
+        if (!this.isCollidable(gridPosX, gridPosY)) {
+            cellList.push(this.getCell(gridPosX, gridPosY));
+        }
+        
         // No collisions found.  Return cells.
         return cellList;
+    },
+    
+    lineOfSight: function (target1, target2, max) {
+        // OMG this is so messy.  Clean this up!
+        var cx1 = target1.x + (this.cellSize / 2),
+            cy1 = target1.y + (this.cellSize / 2),
+            cx2 = target2.x + (this.cellSize / 2),
+            cy2 = target2.y + (this.cellSize / 2);
+        // var p = this.dda(target1.x, target1.y, target2.x, target2.y, max);
+        var p = this.dda(cx1, cy1, cx2, cy2, max);
+        
+        console.log("path = ", p);
+        if (p.length > 0) {
+            if (p[p.length-1].actor == target2) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
     },
     
     init: function () {

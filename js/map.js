@@ -184,9 +184,19 @@ Crafty.c("Map", {
     isCollidable: function (x, y) {
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
-            console.log(x, y, c);
-            console.log(c.actor, c.passable);
             if(c.actor != null || c.passable == false) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    },
+    
+    containsHero: function (x, y) {
+        if(this.inBounds(x, y)) {
+            console.log(x, ", ", y, " Checking for player here: ", this.cells[x,y].actor)
+            if(this.cells[x,y].actor == GAME.player) {
                 return true;
             } else {
                 return false;

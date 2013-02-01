@@ -389,6 +389,13 @@ Crafty.c("Enemy", {
             // Move!
             this.slide(randDir);
             
+            // Update color based on if we can see the hero or not.
+            if(GAME.map.lineOfSight(this, GAME.player)) {
+                this.color("#ff0000");
+            } else {
+                this.color("#0000ff");
+            }
+            
             // Update stats.
             GAME.stats.enemyMoves[randDir.toLowerCase()]++;
         }
@@ -402,6 +409,6 @@ Crafty.c("Enemy", {
     init: function () {
         this.requires("2D, DOM, Color, Character, Slide, Attackable, Attacker");
         this.name("Enemy");
-        this.color("#ff0000");
+        this.color("#0000ff");
     }
 })

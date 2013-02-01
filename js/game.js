@@ -113,13 +113,13 @@ function START_GAME () {
     // ----------- /
     var e1 = Crafty.e("Enemy");
     GAME.map.addActor(4, 3, e1);
-    
+    /*
     var e2 = Crafty.e("Enemy");
     GAME.map.addActor(10, 10, e2);
     
     var e3 = Crafty.e("Enemy");
     GAME.map.addActor(15, 2, e3);
-    
+    */
     // Follow the player.
     Crafty.viewport.follow(GAME.player, 0, 0);
 }
