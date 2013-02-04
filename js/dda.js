@@ -43,8 +43,14 @@ Crafty.c("DDAMap", {
 
         var maxX = gridPosX * this._cellSize - x1;
         var maxY = gridPosY * this._cellSize - y1;
-        if (dirX >= 0) maxX += this._cellSize;
-        if (dirY >= 0) maxY += this._cellSize;
+        
+        if (dirX >= 0) {
+            maxX += this._cellSize;
+        }
+        if (dirY >= 0) {
+            maxY += this._cellSize;
+        }
+        
         maxX /= dirX;
         maxY /= dirY;
 
@@ -65,14 +71,13 @@ Crafty.c("DDAMap", {
             
             // Out of bounds.  Return cell list.
             if (!this.inBounds(gridPosX, gridPosY)) {
-                console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
+                // console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             
             // Collision found.  Return cell list.
             if (this.isCollidable(gridPosX, gridPosY)) {
-                console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
-                
+                // console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             
@@ -94,24 +99,25 @@ Crafty.c("DDAMap", {
         return returnList;
     },
     
-    lineOfSight: function (target1, target2, max) {
-        // OMG this is so messy.  Clean this up!
-        var cx1 = target1.x + (this.cellSize / 2),
-            cy1 = target1.y + (this.cellSize / 2),
-            cx2 = target2.x + (this.cellSize / 2),
-            cy2 = target2.y + (this.cellSize / 2);
-        // var p = this.dda(target1.x, target1.y, target2.x, target2.y, max);
-        var p = this.dda(cx1, cy1, cx2, cy2, max);
-        
-        // DEBUG //
-        console.log("path = ", p);
+    lineOfSight: function (cell1, cell2, max) {
+        // Use center of each cell as end points.
+        var cx1 = cell1.x + (this.cellSize / 2),
+            cy1 = cell1.y + (this.cellSize / 2),
+            cx2 = cell2.x + (this.cellSize / 2),
+            cy2 = cell2.y + (this.cellSize / 2);
+        var path = this.dda(cx1, cy1, cx2, cy2, max);
+    
+//---------------------------- DEBUG -----------------------------------------//
+        /*
+        console.log("DDAMap :: lineOfSight : path = ", path);
         GAME.map.refresh();
-        for(var dda=1; dda<p.length; dda++) {
-            console.log("loooping!");
-            p[dda].color("#ccc");
+        for(var dda=1; dda<path.length; dda++) {
+            path[dda].color("#ccc");
         }
+        */
+//---------------------------- DEBUG -----------------------------------------//
         
-        if(p[0]) {
+        if(path[0]) {
             return true;
         } else {
             return false;
