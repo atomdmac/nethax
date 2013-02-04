@@ -21,11 +21,9 @@ Crafty.c("DDAMap", {
             returnList = [false];
 
         // Cell contents collidable?
-        /*
-        if (this.isCollidable(gridPosX, gridPosY)) {
+        if (!this.isPassable(gridPosX, gridPosY)) {
             return returnList;
         }
-        */
         
         var dirX = x2 - x1;
         var dirY = y2 - y1;

@@ -193,12 +193,13 @@ Crafty.c("Map", {
     },
     
     /**
-     * Return TRUE if cell contains impassable terrain or entities.
+     * Return TRUE if cell contains any impassable terrain or hostile entities.
      */
     isCollidable: function (x, y) {
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
-            if(/*c.actor != null ||*/ c.passable == false) {
+            // TODO: Check to see if actor(s) are hostile or not.
+            if(/*c.actor != null ||*/ c.passable === false) {
                 return true;
             }
             else {
@@ -206,6 +207,46 @@ Crafty.c("Map", {
             }
         }
         return false;
+    },
+    
+    /**
+     * Return TRUE only if cell contains passable terrain.  Does not account for
+     * hostile entities.
+     */
+    isPassable: function (x, y) {
+        if(this.inBounds(x, y)) {
+            var c = this.cells[x][y];
+            if(c.passable === true) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    },
+    
+    /**
+     * Return TRUE only if cell contains at least 1 actor.
+     */
+    containsActor: function (x, y) {
+        if(this.inBounds(x, y)) {
+            var c = this.cells[x][y];
+            if(c.actor != null) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    },
+    
+    /**
+     * Return TRUE only if the cell contains at least 1 item.
+     */
+    containsItem: function (x, y) {
+        // TODO
     },
     
     containsHero: function (x, y) {
