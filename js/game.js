@@ -43,14 +43,7 @@ function START_GAME () {
     /*
      * Add an entry to the log for the user to see.
      */
-    // TODO: Implement a proper log in the DOM instead of console.log().
-    GAME.log = function (msg) {
-        var output = "";
-        for (var i in arguments) {
-            output += arguments[i];
-        }
-        console.log(output);
-    };
+    GAME.log = Log($("body")).log;
     
     /*
      * Convert pixel position to grid position.

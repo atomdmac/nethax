@@ -1,0 +1,10 @@
+#game-log {
+    width: 300px;
+    height: 100px;
+    border: 1px solid black;
+    overflow: auto;
+}
+
+.log-message {
+    /* EMPTY FOR NOW */
+}
