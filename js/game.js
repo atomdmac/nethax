@@ -40,12 +40,14 @@ function START_GAME () {
         
         // DEBUG //
         // Test DDA functions.
+        /*
         var c1 = GAME.map.toPos(1, 1);
         var c2 = GAME.map.toPos(4, 10);
         var ddaPath = GAME.map.dda(c1.x, c1.y, c2.x, c2.y);
-        for(var dda=0; dda<ddaPath.length; dda++) {
+        for(var dda=1; dda<ddaPath.length; dda++) {
             ddaPath[dda].color("#ccc");
         }
+        */
     }
     
     /*
@@ -112,7 +114,7 @@ function START_GAME () {
     // DEBUG       //
     // ----------- /
     var e1 = Crafty.e("Enemy");
-    GAME.map.addActor(4, 3, e1);
+    GAME.map.addActor(10, 6, e1);
     /*
     var e2 = Crafty.e("Enemy");
     GAME.map.addActor(10, 10, e2);

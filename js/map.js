@@ -106,6 +106,14 @@ Crafty.c("Map", {
         this.cells[x][y].update();
     },
     
+    refresh: function () {
+        for(var x=0; x<this._width; x++) {
+            for(var y=0; y<this._height; y++) {
+                this.cells[x][y].update();
+            }
+        }
+    },
+    
 // -----------------------------------------------------------------------------
 // Entity Management
 // -----------------------------------------------------------------------------
@@ -118,11 +126,13 @@ Crafty.c("Map", {
     },
     
     addActor: function (x, y, actor) {
+        // TODO: Make sure x/y are valid!
+        
         this.cells[x][y].actor = actor;
         this.actors.push(actor);
         
         // Initialize the actor.
-        actor.mapEntity(x, y);
+        actor.mapEntity(x, y, this.cells[x][y]);
         
         // Remove the actor when it dies.
         actor.bind("Die", function (actor) {
@@ -133,8 +143,12 @@ Crafty.c("Map", {
         // Listen for move events so we can update the map.
         var self = this;
         actor.bind("SlideMove", function (e) {
+            // Update Map.
             self.cells[e.oldCell.x][e.oldCell.y].actor = null;
             self.cells[e.newCell.x][e.newCell.y].actor = this;
+            
+            // Update entity.
+            this.cell = self.cells[e.newCell.x][e.newCell.y];
         });
     },
     
@@ -184,9 +198,10 @@ Crafty.c("Map", {
     isCollidable: function (x, y) {
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
-            if(c.actor != null || c.passable == false) {
+            if(/*c.actor != null ||*/ c.passable == false) {
                 return true;
-            } else {
+            }
+            else {
                 return false;
             }
         }
@@ -195,7 +210,8 @@ Crafty.c("Map", {
     
     containsHero: function (x, y) {
         if(this.inBounds(x, y)) {
-            console.log(x, ", ", y, " Checking for player here: ", this.cells[x,y].actor)
+            console.log(x, ", ", y, " Checking for player here: ", this.cells[x,y].actor);
+            
             if(this.cells[x,y].actor == GAME.player) {
                 return true;
             } else {

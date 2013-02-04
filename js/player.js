@@ -2,6 +2,9 @@
 // Map Entity (Players, Items, etc.)
 // -----------------------------------------------------------------------------
 Crafty.c("MapEntity", {
+    // A reference to the MapCell containing this entity.
+    cell: null,
+    
     // Entity's name.
     _name: "Entity Name",
     name: function (name) {
@@ -33,7 +36,8 @@ Crafty.c("MapEntity", {
         }
     },
     
-    mapEntity: function (x, y) {
+    mapEntity: function (x, y, cell) {
+        this.cell = cell;
         var pos = GAME.toPos(x, y);
         this.attr({
             "x": pos.x,
@@ -390,7 +394,9 @@ Crafty.c("Enemy", {
             this.slide(randDir);
             
             // Update color based on if we can see the hero or not.
-            if(GAME.map.lineOfSight(this, GAME.player)) {
+            var ddaResult = GAME.map.lineOfSight(this.cell, GAME.player.cell);
+            
+            if(ddaResult == true) {
                 this.color("#ff0000");
             } else {
                 this.color("#0000ff");
