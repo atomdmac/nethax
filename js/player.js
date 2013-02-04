@@ -306,6 +306,7 @@ Crafty.c("Attacker", {
 // -----------------------------------------------------------------------------
 Crafty.c("Attackable", {
     hit: function (check) {
+        // TODO: Factor in dodge chance when calculating results of a hit check.
         if (check > this._armor) {
             return true;
         } else {
@@ -329,6 +330,7 @@ Crafty.c("Attackable", {
     /*
      * Kills/breaks the entity.
      */
+    // TODO: Change "die" to "kill" (event: "killed") to avoid confusion with dice/die terminology.
     die: function () {
         this.trigger("Die", this);
         this.destroy();
@@ -383,9 +385,12 @@ Crafty.c("Player", {
 // Enemy Entity
 // -----------------------------------------------------------------------------
 Crafty.c("Enemy", {
+    
+    /*
+     * Move the entity in a random direction.
+     */
     randomMove: function () {
-        
-        // TODO: Find a better way to generate random directions.  This way favors the middle two items. :(
+        // TODO: Use NWSE directions instead of UP/DOWN/RIGHT/LEFT.
         var directions = ["DOWN", "UP", "RIGHT", "LEFT"],
             randDir    = directions.random();
         
@@ -393,28 +398,37 @@ Crafty.c("Enemy", {
             // Move!
             this.slide(randDir);
             
-            // Update color based on if we can see the hero or not.
-            var ddaResult = GAME.map.lineOfSight(this.cell, GAME.player.cell, 20);
-            
-            if(ddaResult == true) {
-                this.color("#ff0000");
-            } else {
-                this.color("#0000ff");
-            }
-            
             // Update stats.
             GAME.stats.enemyMoves[randDir.toLowerCase()]++;
         }
     },
     
+    /*
+     * Update our record of what this entity can see.
+     */
+    // TODO: Move updateSight method to a more generic component since it could be useful to any entity.
+    updateSight: function () {
+        // Update color based on if we can see the hero or not.
+        var ddaResult = GAME.map.lineOfSight(this.cell, GAME.player.cell, 20);
+        
+        if(ddaResult === true) {
+            this.color("#ff0000");
+        } else {
+            this.color("#0000ff");
+        }
+    },
+    
+    // Called at each simulation iteration/turn.
     tick: function () {
         // TODO: Do other stuff besides just move randomly.
         this.randomMove();
+        this.updateSight();
     },
     
     init: function () {
         this.requires("2D, DOM, Color, Character, Slide, Attackable, Attacker");
         this.name("Enemy");
         this.color("#0000ff");
+        this._isNPC = true;
     }
 })
