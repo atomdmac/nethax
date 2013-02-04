@@ -1,4 +1,5 @@
 function START_GAME () {
+    // Create Global GAME object.
     GAME = {};
     
     // Settings.
@@ -37,18 +38,7 @@ function START_GAME () {
         for (var i=0; i<actors.length; i++) {
             actors[i].tick();
         }
-        
-        // DEBUG //
-        // Test DDA functions.
-        /*
-        var c1 = GAME.map.toPos(1, 1);
-        var c2 = GAME.map.toPos(4, 10);
-        var ddaPath = GAME.map.dda(c1.x, c1.y, c2.x, c2.y);
-        for(var dda=1; dda<ddaPath.length; dda++) {
-            ddaPath[dda].color("#ccc");
-        }
-        */
-    }
+    };
     
     /*
      * Add an entry to the log for the user to see.
@@ -60,7 +50,7 @@ function START_GAME () {
             output += arguments[i];
         }
         console.log(output);
-    }
+    };
     
     /*
      * Convert pixel position to grid position.
@@ -69,8 +59,8 @@ function START_GAME () {
         return {
             "x": Math.floor(x / GAME.settings.cellSize),
             "y": Math.floor(y / GAME.settings.cellSize)
-        }
-    }
+        };
+    };
     
     /*
      * Convert grid position to pixel position.
@@ -79,8 +69,8 @@ function START_GAME () {
         return {
             "x": Math.floor(x * GAME.settings.cellSize),
             "y": Math.floor(y * GAME.settings.cellSize)
-        }
-    }
+        };
+    };
     
     /*
      * Roll the given dice type (type) the given number of times (num)
@@ -92,7 +82,7 @@ function START_GAME () {
             total += Math.randomInt(1, type);
         }
         return total;
-    }
+    };
     
     // Use jQuery's proxy but expose through the GAME object so we can implement
     // our own later if we want to.  Eventually, it would be nice not to -have-
