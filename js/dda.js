@@ -53,9 +53,7 @@ Crafty.c("DDAMap", {
         var gridGoalX = Math.floor(x2 / this._cellSize);
         var gridGoalY = Math.floor(y2 / this._cellSize);
         
-        while (gridPosX != gridGoalX ||
-               gridPosY != gridGoalY /*||
-               max > returnList.length + 1*/) {
+        while ((gridPosX != gridGoalX || gridPosY != gridGoalY)) {
             if (maxX < maxY) {
                 maxX += deltaX;
                 gridPosX += stepX;
@@ -81,6 +79,11 @@ Crafty.c("DDAMap", {
             // No collision found.  Add cell to list.
             else {
                 returnList.push(this.getCell(gridPosX, gridPosY));
+            }
+            
+            // Break and return if we've reached our maximum path length.
+            if(max < returnList.length + 1) {
+                return returnList;
             }
         }
         

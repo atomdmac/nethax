@@ -394,7 +394,7 @@ Crafty.c("Enemy", {
             this.slide(randDir);
             
             // Update color based on if we can see the hero or not.
-            var ddaResult = GAME.map.lineOfSight(this.cell, GAME.player.cell);
+            var ddaResult = GAME.map.lineOfSight(this.cell, GAME.player.cell, 10);
             
             if(ddaResult == true) {
                 this.color("#ff0000");
