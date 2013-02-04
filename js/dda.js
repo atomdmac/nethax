@@ -74,7 +74,7 @@ Crafty.c("DDAMap", {
             }
             
             // Collision found.  Return cell list.
-            if (this.isCollidable(gridPosX, gridPosY)) {
+            if (!this.isTransparent(gridPosX, gridPosY)) {
                 // console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }

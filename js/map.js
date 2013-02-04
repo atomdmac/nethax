@@ -199,7 +199,7 @@ Crafty.c("Map", {
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
             // TODO: Check to see if actor(s) are hostile or not.
-            if(/*c.actor != null ||*/ c.passable === false) {
+            if(c.actor != null || c.passable === false) {
                 return true;
             }
             else {
@@ -214,6 +214,24 @@ Crafty.c("Map", {
      * hostile entities.
      */
     isPassable: function (x, y) {
+        if(this.inBounds(x, y)) {
+            var c = this.cells[x][y];
+            if(c.passable === true) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    },
+    
+    /**
+     * Returns TRUE if the cell does not contain any entities or terrain that
+     * block visibility.
+     */
+    isTransparent: function (x, y) {
+        // TODO: Add separate cell property to transparency instead of using passability to determine.
         if(this.inBounds(x, y)) {
             var c = this.cells[x][y];
             if(c.passable === true) {
