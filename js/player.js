@@ -14,6 +14,7 @@ Crafty.c("MapEntity", {
         return this._name;
     },
     
+    // TODO: Move checkSurrounding to the Map component.
     checkSurrounding: function (direction) {
         var dirs = {
             "UP"    : [0, -1],
@@ -55,6 +56,7 @@ Crafty.c("MapEntity", {
 // -----------------------------------------------------------------------------
 // Animate movement between turns.
 // -----------------------------------------------------------------------------
+// TODO: Make Slide component responsible for animation only.  Shouldn't do any map querying or make updates to the map.
 Crafty.c("Slide", {
     moveSpeed: 10,
     cellSize: null,
@@ -163,6 +165,7 @@ Crafty.c("Slide", {
 // -----------------------------------------------------------------------------
 // Key Movement Entity
 // -----------------------------------------------------------------------------
+// TODO: Separate user input from Player and animation (Slide) components.
 Crafty.c("KeyMovement", {
     
     /**
@@ -282,7 +285,7 @@ Crafty.c("Attacker", {
             if (target.hit(check)) {
                 // TODO: Factor in character attributes to determine die type/number.
                 var dmg = GAME.roll(6, 2);
-                target.damage(dmg);
+                target.damage(dmg, this);
             }
             
             // Attack misses.
@@ -317,13 +320,27 @@ Crafty.c("Attackable", {
     /*
      * Do damage to this entity.  Entity will die/break if HP falls below 0.
      */
-    damage: function (amount) {
+    damage: function (amount, attacker) {
+        
         // TODO: Add damage reduction someday...
         GAME.log(this.name(), " takes ", amount, " damage.");
         
+        // Take damage / die.
         this._hp -= amount;
         if(this._hp < 0) {
             this.die();
+        }
+        
+        // Retaliate if possible.
+        // TODO: Find a way to make sure this never loops infinitely.
+        if (this.has("Attacker") &&
+                attacker !== undefined &&
+                attacker.has("Attackable") &&
+                this._isNPC === true) {
+            
+            GAME.log(this.name(), " retaliates!");
+            
+            this.attack(attacker);
         }
     },
     
@@ -340,6 +357,7 @@ Crafty.c("Attackable", {
     /*
      * Get/Set the Armor Class for this entity.
      */
+    // TODO: AC could be affected by Character stats and equiped items.
     _armor: 5,
     armor: function (num) {
         if(num!==undefined) {
@@ -351,6 +369,7 @@ Crafty.c("Attackable", {
     /*
      * Get/Set max Hit Points for this entity.
      */
+    // TODO: Implement maximum HP limit.
     _hp: 10,
     hp: function (num) {
         if(num!==undefined) {
@@ -360,7 +379,7 @@ Crafty.c("Attackable", {
     },
     
     init: function () {
-        // TODO
+        // EMPTY
     }
 });
 
