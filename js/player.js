@@ -329,10 +329,12 @@ Crafty.c("Attackable", {
         this._hp -= amount;
         if(this._hp < 0) {
             this.die();
+            return;
         }
         
         // Retaliate if possible.
-        // TODO: Find a way to make sure this never loops infinitely.
+        // TODO: Find a way to make sure retaliation code never loops infinitely between player and enemy.
+        // TODO: Move retaliation code to hit() so enemies can retaliate even if the player misses.
         if (this.has("Attacker") &&
                 attacker !== undefined &&
                 attacker.has("Attackable") &&
