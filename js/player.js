@@ -327,7 +327,7 @@ Crafty.c("Attackable", {
         
         // Take damage / die.
         this._hp -= amount;
-        if(this._hp < 0) {
+        if(this._hp <= 0) {
             this.die();
             return;
         }
