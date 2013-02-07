@@ -26,12 +26,21 @@ var sampleMap = [
 // -----------------------------------------------------------------------------
 Crafty.c("MapCell", {
     passable: false,
-    actor: null,
-    items: [],
-    width: null,
-    height: null,
+    actor : null,
+    items : [],
+    _cellX : null,
+    _cellY : null,
     
-    update: function () {
+    update: function (x, y) {
+        // Update internal map location data (if given);
+        if(x!==undefined) {
+            this._cellX = x;
+        }
+        if(y!==undefined) {
+            this._cellY = y;
+        }
+        
+        // Update display.
         if (this.passable) {
             this.color("#fff");
         } else {
@@ -42,6 +51,9 @@ Crafty.c("MapCell", {
     init: function () {
         // Dependencies.
         this.requires("2D, DOM, Color");
+        
+        this.__defineGetter__("cellX", function () {return this._cellX});
+        this.__defineGetter__("cellY", function () {return this._cellY});
     }
 });
 
@@ -51,10 +63,10 @@ Crafty.c("MapCell", {
 Crafty.c("Map", {
     // Some constants.
     // TODO: Convert directions to NWSE instead.
-    UP    : [0, -1],
-    RIGHT : [1,  0],
-    DOWN  : [0,  1],
-    LEFT  : [-1, 0],
+    N : [0, -1],
+    W : [-1, 0],
+    S : [0,  1],
+    E : [1,  0],
     
     cells: null,
     actors: null,
@@ -88,7 +100,7 @@ Crafty.c("Map", {
                     "x": x * cellSize,
                     "y": y * cellSize
                 });
-                newCell.update();
+                newCell.update(x, y);
                 
                 this.cells[x].push(newCell);
             }
@@ -135,25 +147,33 @@ Crafty.c("Map", {
         actor.mapEntity(x, y, this.cells[x][y]);
         
         // Remove the actor when it dies.
-        actor.bind("Die", function (actor) {
-            var cellPos = GAME.toCell(actor.x, actor.y);
-            self.cells[cellPos.x][cellPos.y].actor = null;
-        });
-        
-        // Listen for move events so we can update the map.
         var self = this;
-        actor.bind("SlideMove", function (e) {
-            // Update Map.
-            self.cells[e.oldCell.x][e.oldCell.y].actor = null;
-            self.cells[e.newCell.x][e.newCell.y].actor = this;
-            
-            // Update entity.
-            this.cell = self.cells[e.newCell.x][e.newCell.y];
+        actor.bind("Killed", function (actor) {
+            self.cells[actor.cell.cellX][actor.cell.cellY].actor = null;
         });
     },
     
     removeActor: function (actor) {
         // TODO:  Currently handled in "Die" callback.
+    },
+    
+    moveEntity: function (entity, direction) {
+        var dir     = this[direction],
+            curCell = entity.cell,
+            newCell = this.getAdjacent(curCell, direction);
+        
+        if(newCell !== undefined && newCell.passable && newCell.actor == null) {
+            // Update Map.
+            this.cells[curCell.cellX][curCell.cellY].actor = null;
+            this.cells[newCell.cellX][newCell.cellY].actor = entity;
+            
+            // Update entity.
+            entity.cell = newCell;
+            
+            return true;
+        } else {
+            return false;
+        }
     },
 
 // -----------------------------------------------------------------------------
@@ -161,7 +181,10 @@ Crafty.c("Map", {
 // -----------------------------------------------------------------------------
     
     getCell: function (x, y) {
-        return this.cells[x][y];
+        if (this.inBounds(x, y)) {
+            return this.cells[x][y];
+        }
+        return undefined;
     },
     
     /**
@@ -309,19 +332,38 @@ Crafty.c("Map", {
     /**
      * Return the adjacent cell in the given direction (N/W/S/E).
      */
-    getAdjacent: function (target, direction) {
-        if (this[direction] !== undefined) {
+    getAdjacent: function (cell, direction) {
+        var offset = this[direction];
+        
+        if (offset !== undefined) {
             // Determine the location of the target cell.
-            var pos = GAME.toCell(this._x, this._y);
-            pos.x += this[direction][0];
-            pos.y += this[direction][1];
+            var pos = {
+                "x": cell.cellX + offset[0],
+                "y": cell.cellY + offset[1]
+            }
             
             // Get a reference to the target cell (if it exists).
             var targetCell = GAME.map.getCell(pos.x, pos.y);
             
             return targetCell;
+        }
+        else {
+            return undefined;
+        }
+    },
+    
+    /**
+     * Can the <i>target</i> move in the given direction?
+     */
+    canMove: function (entity, direction) {
+        var dir     = this[direction],
+            curCell = entity.cell,
+            newCell = this.getAdjacent(curCell, direction);
+        
+        if(newCell !== undefined && newCell.passable && newCell.actor == null) {
+            return true;
         } else {
-            return null;
+            return false;
         }
     },
     

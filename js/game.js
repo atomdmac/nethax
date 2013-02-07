@@ -6,7 +6,8 @@ function START_GAME () {
     GAME.settings = {
         viewW: 20,
         viewH: 20,
-        cellSize: 16
+        cellSize: 16,
+        turnDuration: 10
     };
     
     // A place to store statistics.
@@ -48,6 +49,7 @@ function START_GAME () {
     /*
      * Convert pixel position to grid position.
      */
+    // TODO: Remove GAME.toCell().  It has been moved to Map component.
     GAME.toCell  = function (x, y) {
         return {
             "x": Math.floor(x / GAME.settings.cellSize),
@@ -58,6 +60,7 @@ function START_GAME () {
     /*
      * Convert grid position to pixel position.
      */
+    // TODO: Remove GAME.toPos().  It has been moved to Map component.
     GAME.toPos = function (x, y) {
         return {
             "x": Math.floor(x * GAME.settings.cellSize),
@@ -87,22 +90,34 @@ function START_GAME () {
     GAME.map.parse(sampleMap, GAME.settings.cellSize);
     
     // Initialize player.
-    GAME.player = Crafty.e("Player");
-    GAME.player.bind("PlayerAction", function (action) {
+    
+    // Entity factories don't work currently in Crafty.
+    // GAME.player = Crafty.newFactoryEntity("Player");
+    GAME.player = Player();
+    GAME.map.addActor(2, 2, GAME.player);
+    
+    // Initialize Keyboard Input
+    GAME.keyboard = Crafty.e("KeyboardInput");
+    GAME.keyboard.bind("PlayerAction", function (action) {
         GAME.tick();
     });
-    GAME.map.addActor(2, 2, GAME.player);
+    
     
     // ----------- //
     // DEBUG       //
     // ----------- /
-    var e1 = Crafty.e("Enemy");
+        // Entity factories don't work currently in Crafty.
+
+    // var e1 = Crafty.newFactoryEntity("Enemy");
+    var e1 = Enemy();
     GAME.map.addActor(10, 6, e1);
     
-    var e2 = Crafty.e("Enemy");
+    // var e2 = Crafty.newFactoryEntity("Enemy");
+    var e2 = Enemy();
     GAME.map.addActor(10, 10, e2);
     
-    var e3 = Crafty.e("Enemy");
+    // var e3 = Crafty.newFactoryEntity("Enemy");
+    var e3 = Enemy();
     GAME.map.addActor(15, 2, e3);
     
     // Follow the player.
