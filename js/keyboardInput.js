@@ -19,8 +19,12 @@ Crafty.c("KeyboardInput", {
      */
     _onTurnEnd: function () {
         this._inProgress = false;
+        this._checkKeys();
     },
     
+    /*
+     * Auto-attack an enemy.
+     */
     _autoAttack: function (direction) {
         var cell = this._map.getAdjacent(this._player.cell, direction),
             enemy = cell.actor;
@@ -34,6 +38,10 @@ Crafty.c("KeyboardInput", {
         }
     },
     
+    /*
+     * Move the game state forward (unless silent==true, in which case, just
+     * don't allow input until the turn delay is over.
+     */ 
     _doTick: function (silent) {
         this._inProgress = true;
         this._timerEnt.tween({x:0}, GAME.settings.turnDuration);
@@ -42,6 +50,91 @@ Crafty.c("KeyboardInput", {
         if (!silent) {
             this.trigger("PlayerAction");
         }
+    },
+    
+    _doMovementKeys: function () {
+        
+    },
+    
+    /*
+     * Check to see which keys are down and do something based on that.
+     */
+    _checkKeys: function (e) {
+        // Don't initiate movement if we're already moving.
+        if (this._inProgress) {
+            return;
+        }
+        
+        var action = false,
+            keys = Crafty.keys;
+        
+        if(e) {        
+            // Auto-Attack Keys
+            if(e.key == keys["UP_ARROW"]) {
+                action = this._autoAttack("N");
+            }
+            else if(e.key == keys["DOWN_ARROW"]) {
+                action = this._autoAttack("S");
+            }
+            else if(e.key == keys["LEFT_ARROW"]) {
+                action = this._autoAttack("W");
+            }
+            else if(e.key == keys["RIGHT_ARROW"]) {
+                action = this._autoAttack("E");
+            }
+            // End Auto-Attack Keys
+            
+            // Tick and return if player took a valid action.
+            if(action) {
+                this._doTick();
+                return;
+            }
+            // End Attack Keys
+            
+            // Rest Key
+            if (e.key == keys["PERIOD"]) {
+                // TODO: Heal player
+                this._doTick();
+                return;
+            }
+            
+            // Inventory Key
+            if (e.key == keys["I"]) {
+                // TODO: Bring up inventory screen.
+                this._doTick(true);
+                GAME.log("Inventory not implemented yet!");
+                return;
+            }
+        }
+        
+        // Movement Keys
+        // NOTE: Since these keys don't require that the event be passed to this
+        //       function, when this function is called from this._onTurnEnd,
+        //       we can continue motion if the player is holding any one of
+        //       these keys down.  All of the key combos above will only be
+        //       fired onKeyDown and will not be fired repeatedly.
+        if (this.isDown(keys["UP_ARROW"])) {
+            action = this._player.motion("N");
+        }
+        
+        else if (this.isDown(keys["DOWN_ARROW"])) {
+            action = this._player.motion("S");
+        }
+        
+        else if (this.isDown(keys["LEFT_ARROW"])) {
+            action = this._player.motion("W");
+        }
+        
+        else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
+            action = this._player.motion("E");
+        }
+        
+        // Tick and return if player took valid action.
+        if(action) {
+            this._doTick();
+            return;
+        }
+        // End Movement Keys
     },
     
     init: function () {
@@ -60,78 +153,6 @@ Crafty.c("KeyboardInput", {
         // turn.
         this._timerEnt.bind("TweenEnd", GAME.proxy(this._onTurnEnd, this));
         
-        // Listen for input on every frame.
-        this.bind("EnterFrame", function () {
-            
-            // Don't initiate movement if we're already moving.
-            if (this._inProgress) {
-                return;
-            }
-            
-            var action = false,
-                keys = Crafty.keys;
-            
-            // Movement Keys
-            if (this.isDown(keys["UP_ARROW"])) {
-                action = this._player.motion("N");
-            }
-            
-            else if (this.isDown(keys["DOWN_ARROW"])) {
-                action = this._player.motion("S");
-            }
-            
-            else if (this.isDown(keys["LEFT_ARROW"])) {
-                action = this._player.motion("W");
-            }
-            
-            else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
-                action = this._player.motion("E");
-            }
-            
-            // Tick and return if player took valid action.
-            if(action) {
-                this._doTick();
-                return;
-            }
-            // End Movement Keys
-            
-            // Auto-Attack Keys
-            if(this.isDown(keys["UP_ARROW"])) {
-                action = this._autoAttack("N");
-            }
-            else if(this.isDown(keys["DOWN_ARROW"])) {
-                action = this._autoAttack("S");
-            }
-            else if(this.isDown(keys["LEFT_ARROW"])) {
-                action = this._autoAttack("W");
-            }
-            else if(this.isDown(keys["RIGHT_ARROW"])) {
-                action = this._autoAttack("E");
-            }
-            // End Auto-Attack Keys
-            
-            // Tick and return if player took a valid action.
-            if(action) {
-                this._doTick();
-                return;
-            }
-            // End Attack Keys
-            
-            // Rest Key
-            if (this.isDown(keys["PERIOD"])) {
-                // TODO: Heal player
-                this._doTick();
-                return;
-            }
-            
-            // Inventory Key
-            if (this.isDown(keys["I"])) {
-                // TODO: Bring up inventory screen.
-                this._doTick(true);
-                GAME.log("Inventory not implemented yet!");
-                return;
-            }
-            
-        });
+        this.bind("KeyDown", this._checkKeys);
     }
 });
