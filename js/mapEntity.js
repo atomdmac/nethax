@@ -11,6 +11,14 @@ Crafty.c("MapEntity", {
     // TODO: Implement a Move() method that queries the map to see if successful and if so, update and emit an event.
     
     /*
+     * Move the entity in the given direction.  I would have called this "move"
+     * but the 2D component from crafty is already using it.  How lame.
+     */
+    motion: function (direction) {
+        return GAME.map.moveEntity(this, direction);
+    },
+    
+    /*
      * Initialization method for MapEntity.
      */
     mapEntity: function (x, y, cell) {
