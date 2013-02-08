@@ -3,6 +3,7 @@
 // -----------------------------------------------------------------------------
 // Accept user input and do stuff as appropriate.
 // -----------------------------------------------------------------------------
+// TODO: Re-write keyboard input.  This is so gross.
 Crafty.c("KeyboardInput", {
     
     _inProgress: false,
@@ -64,7 +65,6 @@ Crafty.c("KeyboardInput", {
             }
             
             // Attack.
-            // TODO: Clean up key input code.  This is gross.
             var enemy = null;
             if (action == null) {
                 // Is there an enemy there?

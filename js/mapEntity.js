@@ -8,6 +8,8 @@ Crafty.c("MapEntity", {
     // Entity's name.
     _name: "Entity Name",
     
+    // TODO: Implement a Move() method that queries the map to see if successful and if so, update and emit an event.
+    
     /*
      * Initialization method for MapEntity.
      */

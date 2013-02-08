@@ -83,6 +83,7 @@ Crafty.c("Attackable", {
     /*
      * Add the given amount of HP to this entity over the given number of turns.
      */
+    // TODO: Implement healing, especially healing over time while resting.
     heal: function (amount, duration, healer) {
         // TODO
     },

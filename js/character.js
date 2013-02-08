@@ -16,23 +16,33 @@ Crafty.c("Character", {
     // -------------------------------------------------------------------------
     
     // Character stats/attributes.
+    // TODO: Implement attributes.
     attributes: {
+        // Dexterity
         "dex": 0,
+        // Stength
         "str": 0,
+        // Wisdom
         "wis": 0,
-        "int": 0
+        // Intelligence
+        "int": 0,
+        // Consitution
+        "con": 0
     },
     
     // Character's current level.
+    // TODO: Implement experience level.
     _level: 1,
     
     // Amount of experience required to reach next level.
     _maxExp: 0,
     
     // Current amount of experience.
+    // TODO: Implement experience.
     _exp: 0,
     
     // Character's current alignment.
+    // TODO: Implement character alignment.
     _alignment: null, // Will be a state machine? (Good / Neutral / Chaotic).
     
     /*
