@@ -21,6 +21,29 @@ Crafty.c("KeyboardInput", {
         this._inProgress = false;
     },
     
+    _autoAttack: function (direction) {
+        var cell = this._map.getAdjacent(this._player.cell, direction),
+            enemy = cell.actor;
+        // TODO: Check for alignment here before attacking.
+        // If there's an enemy there, attempt to hit 'em.
+        if (enemy !== undefined && enemy !== null) {
+            this._player.attack(enemy);
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    _doTick: function (silent) {
+        this._inProgress = true;
+        this._timerEnt.tween({x:0}, GAME.settings.turnDuration);
+        
+        // If silent==true, don't tell game to tick.
+        if (!silent) {
+            this.trigger("PlayerAction");
+        }
+    },
+    
     init: function () {
         // Dependencies.
         this.requires("Keyboard");
@@ -45,55 +68,70 @@ Crafty.c("KeyboardInput", {
                 return;
             }
             
-            var action = null;
+            var action = false,
+                keys = Crafty.keys;
             
-            // Movement
-            if(this.isDown(Crafty.keys["UP_ARROW"])) {
-                action = this._map.moveEntity(this._player, "N") ? "move" : null;
+            // Movement Keys
+            if (this.isDown(keys["UP_ARROW"])) {
+                action = this._player.motion("N");
             }
             
-            else if(this.isDown(Crafty.keys["DOWN_ARROW"])) {
-                action = this._map.moveEntity(this._player, "S") ? "move" : null;
+            else if (this.isDown(keys["DOWN_ARROW"])) {
+                action = this._player.motion("S");
             }
             
-            else if(this.isDown(Crafty.keys["LEFT_ARROW"])) {
-                action = this._map.moveEntity(this._player, "W") ? "move" : null;
+            else if (this.isDown(keys["LEFT_ARROW"])) {
+                action = this._player.motion("W");
             }
             
             else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
-                action = this._map.moveEntity(this._player, "E") ? "move" : null;
+                action = this._player.motion("E");
             }
             
-            // Attack.
-            var enemy = null;
-            if (action == null) {
-                // Is there an enemy there?
-                if(this.isDown(Crafty.keys["UP_ARROW"])) {
-                    enemy = this._map.getAdjacent(this._player.cell, "N");
-                }
-                else if(this.isDown(Crafty.keys["DOWN_ARROW"])) {
-                    enemy = this._map.getAdjacent(this._player.cell, "S");
-                }
-                else if(this.isDown(Crafty.keys["LEFT_ARROW"])) {
-                    enemy = this._map.getAdjacent(this._player.cell, "W");
-                }
-                else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
-                    enemy = this._map.getAdjacent(this._player.cell, "E");
-                }
-                
-                // If there's an enemy there, attempt to hit 'em.
-                if (enemy !== undefined && enemy !== null && enemy.actor != null) {
-                    this._player.attack(enemy.actor);
-                    action = "attack";
-                }
+            // Tick and return if player took valid action.
+            if(action) {
+                this._doTick();
+                return;
+            }
+            // End Movement Keys
+            
+            // Auto-Attack Keys
+            if(this.isDown(keys["UP_ARROW"])) {
+                action = this._autoAttack("N");
+            }
+            else if(this.isDown(keys["DOWN_ARROW"])) {
+                action = this._autoAttack("S");
+            }
+            else if(this.isDown(keys["LEFT_ARROW"])) {
+                action = this._autoAttack("W");
+            }
+            else if(this.isDown(keys["RIGHT_ARROW"])) {
+                action = this._autoAttack("E");
+            }
+            // End Auto-Attack Keys
+            
+            // Tick and return if player took a valid action.
+            if(action) {
+                this._doTick();
+                return;
+            }
+            // End Attack Keys
+            
+            // Rest Key
+            if (this.isDown(keys["PERIOD"])) {
+                // TODO: Heal player
+                this._doTick();
+                return;
             }
             
-            // Tick if player took a valid action.
-            if(action != null) {
-                this._inProgress = true;
-                this._timerEnt.tween({x:0}, GAME.settings.turnDuration);
-                this.trigger("PlayerAction", action);
+            // Inventory Key
+            if (this.isDown(keys["I"])) {
+                // TODO: Bring up inventory screen.
+                this._doTick(true);
+                GAME.log("Inventory not implemented yet!");
+                return;
             }
+            
         });
     }
 });
