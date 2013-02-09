@@ -120,6 +120,18 @@ function START_GAME () {
     var e3 = Enemy();
     GAME.map.addActor(15, 2, e3);
     
+    var health = Crafty.e("ProgressBar")
+        .attr({
+            x: 0,
+            y: 0,
+            w: 100,
+            h: 20
+        });
+    GAME.player.bind("Hurt", function (e) {
+        health.setScale(0, e.maxHp);
+        health.update(e.hp);
+    });
+    
     // Follow the player.
     Crafty.viewport.follow(GAME.player, 0, 0);
 }

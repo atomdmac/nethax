@@ -8,7 +8,8 @@ Crafty.c("MapEntity", {
     // Entity's name.
     _name: "Entity Name",
     
-    // TODO: Implement a Move() method that queries the map to see if successful and if so, update and emit an event.
+    // TODO: Implement multi-turn actions (rest, eat, etc);
+    // TODO: Implement multi-turn effects (confusion, trapped, etc);
     
     /*
      * Move the entity in the given direction.  I would have called this "move"
