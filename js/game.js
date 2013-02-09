@@ -39,6 +39,9 @@ function START_GAME () {
         for (var i=0; i<actors.length; i++) {
             actors[i].tick();
         }
+        
+        // DEBUG //
+        GAME.player.applyEffects();
     };
     
     /*
@@ -131,6 +134,13 @@ function START_GAME () {
         health.setScale(0, e.maxHp);
         health.update(e.hp);
     });
+    
+    // Test out State component
+    function sayHi (name) {
+        console.log("hi, I'm ", arguments);
+    }
+    GAME.player.addEffect("testEffect1", sayHi, 10, 1, ["jermy1"]);
+    GAME.player.addEffect("testEffect2", sayHi, 0, 10, ["jermy2"]);
     
     // Follow the player.
     Crafty.viewport.follow(GAME.player, 0, 0);
