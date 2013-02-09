@@ -23,7 +23,7 @@ Crafty.c("Attacker", {
             
             // Attack misses.
             else {
-                GAME.log("You miss!");
+                GAME.log(this.name + " misses!");
             }
         }
         
@@ -44,6 +44,7 @@ Crafty.c("Attackable", {
     hit: function (check) {
         // TODO: Factor in dodge chance when calculating results of a hit check.
         if (check > this._armor) {
+            this.trigger("Hit", this);
             return true;
         } else {
             return false;
@@ -58,8 +59,17 @@ Crafty.c("Attackable", {
         // TODO: Add damage reduction someday...
         GAME.log(this.name, " takes ", amount, " damage.");
         
-        // Take damage / die.
+        // Take damage.
         this._hp -= amount;
+        
+        // Emit event!
+        this.trigger("Hurt", {
+            "maxHp" : this._maxHp,
+            "hp"    : this._hp,
+            "damage": amount
+        });
+        
+        // Does the entity die?
         if(this._hp <= 0) {
             this.kill();
             return;
@@ -85,7 +95,8 @@ Crafty.c("Attackable", {
      */
     // TODO: Implement healing, especially healing over time while resting.
     heal: function (amount, duration, healer) {
-        // TODO
+        // TODO: Implement heal.
+        // TODO: Emit heal event.
     },
     
     /*
