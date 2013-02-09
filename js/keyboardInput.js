@@ -70,16 +70,16 @@ Crafty.c("KeyboardInput", {
         
         if(e) {        
             // Auto-Attack Keys
-            if(e.key == keys["UP_ARROW"]) {
+            if(e.key == keys["UP_ARROW"] || e.key == keys["K"]) {
                 action = this._autoAttack("N");
             }
-            else if(e.key == keys["DOWN_ARROW"]) {
+            else if(e.key == keys["DOWN_ARROW"] || e.key == keys["J"]) {
                 action = this._autoAttack("S");
             }
-            else if(e.key == keys["LEFT_ARROW"]) {
+            else if(e.key == keys["LEFT_ARROW"] || e.key == keys["H"]) {
                 action = this._autoAttack("W");
             }
-            else if(e.key == keys["RIGHT_ARROW"]) {
+            else if(e.key == keys["RIGHT_ARROW"] || e.key == keys["L"]) {
                 action = this._autoAttack("E");
             }
             // End Auto-Attack Keys
@@ -113,19 +113,19 @@ Crafty.c("KeyboardInput", {
         //       we can continue motion if the player is holding any one of
         //       these keys down.  All of the key combos above will only be
         //       fired onKeyDown and will not be fired repeatedly.
-        if (this.isDown(keys["UP_ARROW"])) {
+        if (this.isDown(keys["UP_ARROW"]) || this.isDown(keys["K"])) {
             action = this._player.motion("N");
         }
         
-        else if (this.isDown(keys["DOWN_ARROW"])) {
+        else if (this.isDown(keys["DOWN_ARROW"]) || this.isDown(keys["J"])) {
             action = this._player.motion("S");
         }
         
-        else if (this.isDown(keys["LEFT_ARROW"])) {
+        else if (this.isDown(keys["LEFT_ARROW"]) || this.isDown(keys["H"])) {
             action = this._player.motion("W");
         }
         
-        else if(this.isDown(Crafty.keys["RIGHT_ARROW"])) {
+        else if(this.isDown(keys["RIGHT_ARROW"]) || this.isDown(keys["L"])) {
             action = this._player.motion("E");
         }
         
