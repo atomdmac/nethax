@@ -18,16 +18,70 @@ Crafty.c("Character", {
     // Character stats/attributes.
     // TODO: Implement attributes.
     attributes: {
-        // Dexterity
-        "dex": 8,
-        // Stength
-        "str": 8,
-        // Wisdom
-        "wis": 8,
-        // Intelligence
-        "int": 8,
-        // Consitution
-        "con": 8
+        // Agility / Dexterity
+        "agility" : 4,
+        // Intelligence / Smarts
+        "smarts"  : 4,
+        // Wisdom / Willpower
+        "spirit"  : 4,
+        // Physical Strength
+        "strength": 4,
+        // Endurance / Pain Tolerance / Poison & Toxin Resistance
+        "vigor"   : 4
+    },
+    
+    // Character Skills
+    // TODO: Implement skills.
+    skills: {
+        // (Agility) Ability to use melee attacks and weapons.
+        "fighting"    : 1,
+        // (Agility) Ability to use launchers, bows, guns, etc.
+        "shooting"    : 1,
+        // (Spirit)  Resistance to mental distress.
+        "guts"        : 1,
+        // (Smarts)  Ability to treat wounds.
+        "healing"     : 1,
+        // (Spirit)  Ability to frighten a target.
+        //           Checked against target's Spirit / Guts.
+        "intimidation": 1,
+        // (Smarts)  Alertness, ability to search, etc.
+        "notice"      : 1,
+        // (Agility) Hide or move unnoticed.
+        "stealth"     : 1,
+        // (Smarts)  Ability to repair gadgets. Suffer -2 without tools.
+        "repair"      : 1
+    },
+    
+    /**
+     * Return a character's trait.  Throws an exception if the trait is invalid.
+     * @param traitName {String} The name of the trait to retrieve.
+     * @return {Number}
+     */
+    getTrait: function (traitName) {
+        // Trait is an attribute.
+        if(traitName in this.attributes) {
+            return this.attributes[traitName];
+        }
+        // Trait is a skill.
+        if(traitName in this.skills) {
+            return this.skills[traitName];
+        }
+        // Trait is derived from attributes / skills.
+        switch (traitName) {
+            case "parry":
+                return 2 + Math.floor(this.attributes.fighting / 2);
+            case "pace":
+                // TODO: Pace is static.  What modifiers could be added?
+                return 6;
+            case "charisma":
+                // TODO: Charisma is static.  What modifiers could be added?
+                return 0;
+            case "toughness":
+                return 2 + Math.floor(this.attributes.vigor / 2) + this._calcArmor();
+        }
+        
+        // Trait doesn't exist!
+        throw Error("Trait '" + traitName + "' does not exist.");
     },
     
     // Character's current level.
@@ -66,7 +120,7 @@ Crafty.c("Character", {
      * Take no action and heal.
      */
     rest: function () {
-        
+        // TODO: Implement rest.
     },
     
     /*
