@@ -42,7 +42,7 @@ Crafty.c("ProgressBar", {
         this.requires("2D, DOM");
         
         this._background = Crafty.e("2D, DOM, Color")
-            .color("#000000");
+            .css("border", "1px solid gray");
         this._foreground = Crafty.e("2D, DOM, Color")
             .color("#ff0000");
         this._title = Crafty.e("DOM, Text")
