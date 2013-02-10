@@ -28,7 +28,8 @@ Crafty.c("Attacker", {
         }
         
         else {
-            GAME.log("You can't attack that.");
+            GAME.log(this.name + " tries to attack " +
+                     target.name + " but fails.");
         }
     },
     
@@ -88,15 +89,6 @@ Crafty.c("Attackable", {
             
             this.attack(attacker);
         }
-    },
-    
-    /*
-     * Add the given amount of HP to this entity over the given number of turns.
-     */
-    // TODO: Implement healing, especially healing over time while resting.
-    heal: function (amount, duration, healer) {
-        // TODO: Implement heal.
-        // TODO: Emit heal event.
     },
     
     /*
