@@ -19,15 +19,15 @@ Crafty.c("Character", {
     // TODO: Implement attributes.
     attributes: {
         // Dexterity
-        "dex": 0,
+        "dex": 8,
         // Stength
-        "str": 0,
+        "str": 8,
         // Wisdom
-        "wis": 0,
+        "wis": 8,
         // Intelligence
-        "int": 0,
+        "int": 8,
         // Consitution
-        "con": 0
+        "con": 8
     },
     
     // Character's current level.
@@ -61,6 +61,22 @@ Crafty.c("Character", {
     // TODO: Implement maximum HP limit.
     _maxHp: 10,
     _hp: 10,
+    
+    /*
+     * Take no action and heal.
+     */
+    rest: function () {
+        
+    },
+    
+    /*
+     * Add the given amount of HP to this entity over the given number of turns.
+     */
+    // TODO: Implement healing, especially healing over time while resting.
+    heal: function (amount, duration, healer) {
+        // TODO: Implement heal.
+        // TODO: Emit heal event.
+    },
     
     init: function () {
         // Dependencies.

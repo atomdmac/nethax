@@ -84,6 +84,7 @@ Crafty.c("State", {
     },
     
     init: function () {
+        this.requires("Character");
         this._effects = [];
     }
 });

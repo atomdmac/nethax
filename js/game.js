@@ -136,11 +136,20 @@ function START_GAME () {
     });
     
     // Test out State component
+    
+    // Effect callbacks (will be scoped to entity)
     function sayHi (name) {
         console.log("hi, I'm ", arguments);
     }
+    function fakeHeal() {
+        if(this._hp < this._maxHp) this._hp++;
+    }
+    
+    // Add some trivial test effects.
     GAME.player.addEffect("testEffect1", sayHi, 10, 1, ["jermy1"]);
     GAME.player.addEffect("testEffect2", sayHi, 0, 10, ["jermy2"]);
+    // Add rudimentary healing effect.
+    GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
     
     // Follow the player.
     Crafty.viewport.follow(GAME.player, 0, 0);
