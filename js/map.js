@@ -148,13 +148,22 @@ Crafty.c("Map", {
         
         // Remove the actor when it dies.
         var self = this;
-        actor.bind("Killed", function (actor) {
-            self.cells[actor.cell.cellX][actor.cell.cellY].actor = null;
-        });
+        actor.bind("Killed", GAME.proxy(this.removeActor, this));
     },
     
     removeActor: function (actor) {
         // TODO:  Currently handled in "Die" callback.
+        var i = 0;
+            len = this.actors.length,
+            actors = this.actors;
+        for (i; i<len; i++) {
+            if(actors[i] === actor) {
+                // Remove from actor list.
+                actors.splice(i, 1);
+                // Remove from cell container.
+                this.cells[actor.cell.cellX][actor.cell.cellY]["actor"] = null;
+            }
+        }
     },
     
     moveEntity: function (entity, direction) {
