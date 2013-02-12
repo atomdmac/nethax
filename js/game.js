@@ -138,16 +138,16 @@ function START_GAME () {
     // Test out State component
     
     // Effect callbacks (will be scoped to entity)
-    function sayHi (name) {
-        console.log("hi, I'm ", arguments);
+    function fakeEffect (effectName) {
+        console.log(effectName + " is affecting you!");
     }
     function fakeHeal() {
         if(this._hp < this._maxHp) this._hp++;
     }
     
     // Add some trivial test effects.
-    GAME.player.addEffect("testEffect1", sayHi, 10, 1, ["jermy1"]);
-    GAME.player.addEffect("testEffect2", sayHi, 0, 10, ["jermy2"]);
+    GAME.player.addEffect("testEffect1", fakeEffect, 10, 1, ["Test Effect 1"]);
+    GAME.player.addEffect("testEffect2", fakeEffect, 0, 10, ["Test Effect 2"]);
     // Add rudimentary healing effect.
     GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
     
