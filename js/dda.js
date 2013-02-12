@@ -98,12 +98,42 @@ Crafty.c("DDAMap", {
     },
     
     lineOfSight: function (cell1, cell2, max) {
-        // Use center of each cell as end points.
-        var cx1 = cell1.x + (this.cellSize / 2),
-            cy1 = cell1.y + (this.cellSize / 2),
-            cx2 = cell2.x + (this.cellSize / 2),
-            cy2 = cell2.y + (this.cellSize / 2);
-        var path = this.dda(cx1, cy1, cx2, cy2, max);
+        
+        // Use inner of closest corners.
+            var xMod, yMod
+                cellSize = GAME.map.cellSize;
+            if (cell1.cellX == cell2.cellX) {
+                xMod = cellSize / 2;
+            }
+            else if(cell1.cellX - cell2.cellX > 0) {
+                xMod = 1;
+            }
+            else {
+                xMod = (cellSize - cellSize - 1);
+            }
+            
+            if (cell1.cellY == cell2.cellY) {
+                yMod = cellSize / 2;
+            }
+            else if(cell1.cellY - cell2.cellY > 0) {
+                yMod = 1;
+            }
+            else {
+                yMod = (cellSize - cellSize - 1);
+            }
+            
+            // Use center of each cell as end points.
+            /*
+            var cx1 = cell1.x + (cellSize / 2),
+                cy1 = cell1.y + (cellSize / 2),
+                cx2 = cell2.x + (cellSize / 2),
+                cy2 = cell2.y + (cellSize / 2),
+                */
+        var cx1 = cell1.x + xMod,
+                cy1 = cell1.y + yMod,
+                cx2 = cell2.x + xMod,
+                cy2 = cell2.y + yMod,
+                path = GAME.map.dda(cx1, cy1, cx2, cy2, max);
     
 //---------------------------- DEBUG -----------------------------------------//
         /*
