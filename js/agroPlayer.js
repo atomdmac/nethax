@@ -10,6 +10,9 @@ Crafty.c("AgroPlayer", {
     // Current state 
     _agroState: null, // TRUE if we notice the hero, FALSE if we don't.
     
+    // Where did we last see the target?
+    _targetPath: null,
+    
     updateAgroPlayer: function () {
         // TODO: updatePersue
         
@@ -82,7 +85,7 @@ Crafty.c("AgroPlayer", {
         // If the wait counter is over our wait tolerance:
         if (this._waitCount >= this._waitTolerance) {
             this._waitCount = 0;
-            this._agroState = false;
+            this._targetPath = [];
         }
     },
     
@@ -97,11 +100,10 @@ Crafty.c("AgroPlayer", {
     
     // Have we noticed the target?
     _agroNoticeCheck: function () {
-        if (this._agroState) {
+        if (this._targetPath.length > 0) {
             return true;
         }
         if(GAME.map.lineOfSight(this.cell, this._target.cell, 20)) {
-            this._agroState = true;
             return true;
         } else {
             return false;
@@ -110,6 +112,7 @@ Crafty.c("AgroPlayer", {
     
     init: function () {
         this.requires("MapEntity");
+        this._targetPath = [];
         
         // Set the target from here for flexibility.
         this._target = GAME.player;
