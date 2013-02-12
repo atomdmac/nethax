@@ -116,10 +116,10 @@ Crafty.c("DDAMap", {
                 yMod = cellSize / 2;
             }
             else if(cell1.cellY - cell2.cellY > 0) {
-                yMod = 1;
+                yMod = (cellSize - cellSize - 1);
             }
             else {
-                yMod = (cellSize - cellSize - 1);
+                yMod = 1;
             }
             
             // Use center of each cell as end points.

@@ -24,6 +24,7 @@ Crafty.c("AgroPlayer", {
                 max   = 20;
         // If yes, update our path to the player.
             // Use inner of closest corners.
+            // TODO: These same calculations are littered all over the place.  Reduce, reuse!
             var xMod, yMod;
             if (this.cellX == this._target.cellX) {
                 xMod = cellSize / 2;
@@ -100,6 +101,11 @@ Crafty.c("AgroPlayer", {
     
     // Have we noticed the target?
     _agroNoticeCheck: function () {
+        // TODO: These same calculations are littered all over the place.  Reduce, reuse!
+        var cx1 = cell1.x + xMod,
+            cy1 = cell1.y + yMod,
+            cx2 = cell2.x + xMod,
+            cy2 = cell2.y + yMod;
         if (this._targetPath.length > 0) {
             return true;
         }
