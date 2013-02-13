@@ -78,6 +78,7 @@ Crafty.c("State", {
         for (i; i>=0; i--) {
             // Apply effect and remove if it expired (i.e. it returns TRUE).
             if(this._effects[i]()) {
+                // Remove effect.
                 this._effects.splice(i, 1);
             }
         }
