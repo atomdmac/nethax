@@ -115,6 +115,7 @@ function START_GAME () {
     var e1 = Enemy();
     GAME.map.addActor(10, 6, e1);
     
+    /*
     // var e2 = Crafty.newFactoryEntity("Enemy");
     var e2 = Enemy();
     GAME.map.addActor(10, 10, e2);
@@ -122,6 +123,7 @@ function START_GAME () {
     // var e3 = Crafty.newFactoryEntity("Enemy");
     var e3 = Enemy();
     GAME.map.addActor(15, 2, e3);
+    */
     
     var health = Crafty.e("ProgressBar")
         .attr({

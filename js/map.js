@@ -63,10 +63,15 @@ Crafty.c("MapCell", {
 Crafty.c("Map", {
     // Some constants.
     // TODO: Convert directions to NWSE instead.
-    N : [0, -1],
-    W : [-1, 0],
-    S : [0,  1],
-    E : [1,  0],
+    // TODO: Use direction constants as globals in all places that reference them.
+    NE : [ 1, -1],
+    N  : [ 0, -1],
+    NW : [-1, -1],
+    W  : [-1,  0],
+    SW : [-1,  1],
+    S  : [ 0,  1],
+    SE : [-1,  1],
+    E  : [ 1,  0],
     
     cells: null,
     actors: null,

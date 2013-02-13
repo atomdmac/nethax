@@ -12,14 +12,13 @@ Crafty.c("DDAMap", {
      * indices in the array contain references to MapCell objects (where index 1
      * represents the cell closest to x1/y1) and so on.
      */
-    dda: function (x1, y1, x2, y2, max) {
+    dda: function (x1, y1, x2, y2) {
         var gridPos = this.toCell(x1, y1);
             gridPosX = gridPos.x, // Math.round(x1 / this._cellSize),
-            gridPosY = gridPos.y; // Math.round(y1 / this._cellSize);
-            max = max !== undefined ? max : 200,
+            gridPosY = gridPos.y, // Math.round(y1 / this._cellSize);
             // Assume that we -can't- reach the goal cell.
-            returnList = [false];
-
+            returnList = [0];
+        
         // Cell contents collidable?
         if (!this.isPassable(gridPosX, gridPosY)) {
             return returnList;
@@ -83,11 +82,6 @@ Crafty.c("DDAMap", {
             else {
                 returnList.push(this.getCell(gridPosX, gridPosY));
             }
-            
-            // Break and return if we've reached our maximum path length.
-            if(max < returnList.length + 1) {
-                return returnList;
-            }
         }
         
         // No collisions found.  Update first index of results array to reflect.
@@ -97,44 +91,56 @@ Crafty.c("DDAMap", {
         return returnList;
     },
     
-    lineOfSight: function (cell1, cell2, max) {
+    lineOfSight: function (cell1, cell2, max, fullPath) {
         
+        fullPath = fullPath !== undefined ? fullPath : false;
+        
+        // Is it even in our sight radius?!
+        var xdiff = cell1.cellX - cell2.cellX,
+            ydiff = cell1.cellY - cell2.cellY,
+            diag  = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff));
+        if(diag > max) {
+            console.log("Out of range! ", diag, " / ", max);
+            return false;
+        }
+        
+        // TODO: These same calculations are littered all over the place.  Reduce, reuse!
         // Use inner of closest corners.
             var xMod, yMod
                 cellSize = GAME.map.cellSize;
             if (cell1.cellX == cell2.cellX) {
                 xMod = cellSize / 2;
             }
-            else if(cell1.cellX - cell2.cellX > 0) {
-                xMod = 1;
+            else if(cell1.cellX > cell2.cellX) {
+                xMod = 0;
             }
             else {
-                xMod = (cellSize - cellSize - 1);
+                xMod = (cellSize);
             }
             
             if (cell1.cellY == cell2.cellY) {
                 yMod = cellSize / 2;
             }
-            else if(cell1.cellY - cell2.cellY > 0) {
-                yMod = (cellSize - cellSize - 1);
+            else if(cell1.cellY > cell2.cellY) {
+                yMod = 0;
             }
             else {
-                yMod = 1;
+                yMod = (cellSize);
             }
             
-            // Use center of each cell as end points.
-            /*
-            var cx1 = cell1.x + (cellSize / 2),
-                cy1 = cell1.y + (cellSize / 2),
-                cx2 = cell2.x + (cellSize / 2),
-                cy2 = cell2.y + (cellSize / 2),
-                */
+        // Use center of each cell as end points.
+        var cx1 = cell1.x + (cellSize / 2),
+            cy1 = cell1.y + (cellSize / 2),
+            cx2 = cell2.x + (cellSize / 2),
+            cy2 = cell2.y + (cellSize / 2),
+            path = GAME.map.dda(cx1, cy1, cx2, cy2);
+        /*
         var cx1 = cell1.x + xMod,
-                cy1 = cell1.y + yMod,
-                cx2 = cell2.x + xMod,
-                cy2 = cell2.y + yMod,
-                path = GAME.map.dda(cx1, cy1, cx2, cy2, max);
-    
+            cy1 = cell1.y + yMod,
+            cx2 = cell2.x + xMod,
+            cy2 = cell2.y + yMod,
+            path = GAME.map.dda(cx1, cy1, cx2, cy2, max);
+    */
 //---------------------------- DEBUG -----------------------------------------//
         /*
         console.log("DDAMap :: lineOfSight : path = ", path);
@@ -146,6 +152,10 @@ Crafty.c("DDAMap", {
 //---------------------------- DEBUG -----------------------------------------//
         
         if(path[0]) {
+            // If full path result is requested...
+            if(fullPath) {
+                return path;
+            }
             return true;
         } else {
             return false;

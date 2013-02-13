@@ -21,48 +21,24 @@ Crafty.c("AgroPlayer", {
             var cell1 = this.cell,
                 cell2 = this._target.cell,
                 cellSize = GAME.map.cellSize,
-                max   = 20;
-        // If yes, update our path to the player.
-            // Use inner of closest corners.
-            // TODO: These same calculations are littered all over the place.  Reduce, reuse!
-            var xMod, yMod;
-            if (this.cellX == this._target.cellX) {
-                xMod = cellSize / 2;
-            }
-            else if(this.cellX - this._target.cellX > 0) {
-                xMod = 1;
-            }
-            else {
-                xMod = (cellSize - 1);
-            }
-            
-            if (this.cellY == this._target.cellY) {
-                yMod = cellSize / 2;
-            }
-            else if(this.cellY - this._target.cellY > 0) {
-                yMod = 1;
-            }
-            else {
-                yMod = (cellSize - 1);
-            }
-            
-            // Use center of each cell as end points.
-            /*
-            var cx1 = cell1.x + (cellSize / 2),
+                cx1 = cell1.x + (cellSize / 2),
                 cy1 = cell1.y + (cellSize / 2),
                 cx2 = cell2.x + (cellSize / 2),
                 cy2 = cell2.y + (cellSize / 2),
-                */
-        var cx1 = cell1.x + xMod,
-                cy1 = cell1.y + yMod,
-                cx2 = cell2.x + xMod,
-                cy2 = cell2.y + yMod,
-                newPath = GAME.map.dda(cx1, cy1, cx2, cy2, max);
-                
+                newPath = GAME.map.lineOfSight(cell1, cell2, 10, true);
+            
             
             // Update our path if we can see the target.
             if(newPath[0] == true) {
                 this._targetPath = newPath;
+                this._targetPath.shift();
+                
+                
+            }
+            
+            // Sometimes my current cell gets included.
+            // TODO: Figure out why current cell is included in target path.
+            if (this._targetPath[0] == this.cell) {
                 this._targetPath.shift();
             }
             
@@ -72,7 +48,10 @@ Crafty.c("AgroPlayer", {
             }
             
             // If the path is not blocked, move toward the target.
-            if(this.motion( this._agroMoveTo( this._targetPath[0] ))){
+            var motionDirection = this._agroMoveTo(this._targetPath[0]);
+            // console.log("Motion Direction: ", motionDirection);
+            // console.log("path            : ", this._targetPath);
+            if(this.motion(motionDirection)){
                 this._targetPath.shift()
             }
             
@@ -87,31 +66,32 @@ Crafty.c("AgroPlayer", {
         if (this._waitCount >= this._waitTolerance) {
             this._waitCount = 0;
             this._targetPath = [];
+            // TODO: Waiting should affect behavior.  Ex. Wander if hero is not visible.
         }
     },
     
     _agroMoveTo: function (cell) {
-        var direction = "";
-        if(cell.x > this.x) return "E";
-        if(cell.x < this.x) return "W";
-        if(cell.y > this.y) return "S";
-        if(cell.y < this.y) return "N";
+        if(cell.x == this.cell.x && cell.y <  this.cell.y) return "N";
+        if(cell.x <  this.cell.x && cell.y <  this.cell.y) return "NW";
+        if(cell.x <  this.cell.x && cell.y == this.cell.y) return "W";
+        if(cell.x <  this.cell.x && cell.y <  this.cell.y) return "SW";
+        if(cell.x == this.cell.x && cell.y >  this.cell.y) return "S";
+        if(cell.x >  this.cell.x && cell.y >  this.cell.y) return "SE";
+        if(cell.x >  this.cell.x && cell.y == this.cell.y) return "E";
+        console.log("Can't seem to find direction for ", cell.x, ", ", cell.y)
+        console.log("...and                           ", this.cell.x, ", ", this.cell.y);
         return undefined;
     },
     
     // Have we noticed the target?
     _agroNoticeCheck: function () {
-        // TODO: These same calculations are littered all over the place.  Reduce, reuse!
-        var cx1 = cell1.x + xMod,
-            cy1 = cell1.y + yMod,
-            cx2 = cell2.x + xMod,
-            cy2 = cell2.y + yMod;
         if (this._targetPath.length > 0) {
             return true;
         }
-        if(GAME.map.lineOfSight(this.cell, this._target.cell, 20)) {
+        if(GAME.map.lineOfSight(this.cell, this._target.cell, 10)) {
             return true;
-        } else {
+        }
+        else {
             return false;
         }
     },
