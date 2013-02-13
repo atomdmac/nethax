@@ -117,8 +117,24 @@ Crafty.c("KeyboardInput", {
             action = this._player.motion("N");
         }
         
+        else if (this.isDown(keys["Y"])) {
+            action = this._player.motion("NW");
+        }
+        
+        else if (this.isDown(keys["U"])) {
+            action = this._player.motion("NE");
+        }
+        
         else if (this.isDown(keys["DOWN_ARROW"]) || this.isDown(keys["J"])) {
             action = this._player.motion("S");
+        }
+        
+        else if (this.isDown(keys["B"])) {
+            action = this._player.motion("SW");
+        }
+        
+        else if (this.isDown(keys["N"])) {
+            action = this._player.motion("SE");
         }
         
         else if (this.isDown(keys["LEFT_ARROW"]) || this.isDown(keys["H"])) {
