@@ -3,6 +3,7 @@
  *
  * @author playchilla.com
  */
+// TODO: Make DDA / Line-of-Sight a component that can be add to Map.
 Crafty.c("DDAMap", {
     
     /**
@@ -17,7 +18,7 @@ Crafty.c("DDAMap", {
             gridPosX = gridPos.x, // Math.round(x1 / this._cellSize),
             gridPosY = gridPos.y, // Math.round(y1 / this._cellSize);
             // Assume that we -can't- reach the goal cell.
-            returnList = [0];
+            returnList = [false];
         
         // Cell contents collidable?
         if (!this.isPassable(gridPosX, gridPosY)) {
@@ -68,13 +69,13 @@ Crafty.c("DDAMap", {
             
             // Out of bounds.  Return cell list.
             if (!this.inBounds(gridPosX, gridPosY)) {
-                // console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
+                console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             
             // Collision found.  Return cell list.
             if (!this.isTransparent(gridPosX, gridPosY)) {
-                // console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
+                console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             

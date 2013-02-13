@@ -13,28 +13,14 @@ Crafty.c("AgroPlayer", {
     // Where did we last see the target?
     _targetPath: null,
     
+    // How far can this entity see?
+    _sightRadius: 10,
+    
     updateAgroPlayer: function () {
-        // TODO: updatePersue
         
         // Do we notice the player?  Have we noticed the player already?
-        if (this._agroNoticeCheck()) {
-            var cell1 = this.cell,
-                cell2 = this._target.cell,
-                cellSize = GAME.map.cellSize,
-                cx1 = cell1.x + (cellSize / 2),
-                cy1 = cell1.y + (cellSize / 2),
-                cx2 = cell2.x + (cellSize / 2),
-                cy2 = cell2.y + (cellSize / 2),
-                newPath = GAME.map.lineOfSight(cell1, cell2, 10, true);
-            
-            
-            // Update our path if we can see the target.
-            if(newPath[0] == true) {
-                this._targetPath = newPath;
-                this._targetPath.shift();
-                
-                
-            }
+        var agroCheck = this._agroNoticeCheck()
+        if (agroCheck) {
             
             // Sometimes my current cell gets included.
             // TODO: Figure out why current cell is included in target path.
@@ -43,6 +29,7 @@ Crafty.c("AgroPlayer", {
             }
             
             // If this is the last place we saw the target, give up.
+            // TODO: I don't know if we need this anymore since the same check is done by _agroNoticeCheck().
             if(this._targetPath.length == 0) {
                 return;
             }
@@ -85,13 +72,24 @@ Crafty.c("AgroPlayer", {
     
     // Have we noticed the target?
     _agroNoticeCheck: function () {
-        if (this._targetPath.length > 0) {
-            return true;
+        
+        var newPath = GAME.map.lineOfSight(this.cell,
+                                           this._target.cell,
+                                           this._sightRadius,
+                                           true);
+        if(newPath[0]) {
+            this._targetPath = newPath;
+            this._targetPath.shift();
+            // TODO: Entity coloring should -definitely- go somewhere else...
+            this.color("#ff0000");
+            return newPath;
         }
-        if(GAME.map.lineOfSight(this.cell, this._target.cell, 10)) {
-            return true;
+        else if (this._targetPath.length > 0) {
+            this.color("#0000ff");
+            return this._targetPath;
         }
         else {
+            this.color("#0000ff");
             return false;
         }
     },

@@ -30,7 +30,7 @@ function Enemy () {
     e.tick = function () {
         // TODO: Do other stuff besides just move randomly.
         // this.randomMove();
-        this.updateSight();
+        // this.updateSight();
         this.updateAgroPlayer();
     }
     
