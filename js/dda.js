@@ -4,6 +4,23 @@
  * @author playchilla.com
  */
 // TODO: Make DDA / Line-of-Sight a component that can be add to Map.
+Crafty.c("DotMarker", {
+    mark: function (x, y) {
+        this.attr({
+            "x": x,
+            "y": y,
+            "w": 1,
+            "h": 1
+        });
+        this.color("#ff0000");
+    },
+    clear: function () {
+        this.destroy();
+    },
+    init: function () {
+        this.requires("DOM, 2D, Color");
+    }
+});
 Crafty.c("DDAMap", {
     
     /**
@@ -20,6 +37,8 @@ Crafty.c("DDAMap", {
             // Assume that we -can't- reach the goal cell.
             returnList = [false];
         
+        console.log("DDA: Starting grid position: ", gridPosX, ", ", gridPosY);
+        
         // Cell contents collidable?
         if (!this.isPassable(gridPosX, gridPosY)) {
             return returnList;
@@ -32,15 +51,25 @@ Crafty.c("DDAMap", {
             return returnList;
         }
         
+        // Is "perfectly" diagonal?
+        if (Math.abs(dirX) == Math.abs(dirY)) {
+            console.log("Diagonal!");
+            return this.diag(this.getCell(gridPosX, gridPosY), dirX, dirY);
+        }
+        
         var nf = 1 / Math.sqrt(distSqr);
         dirX *= nf;
         dirY *= nf;
 
         var deltaX = this._cellSize / Math.abs(dirX);
         var deltaY = this._cellSize / Math.abs(dirY);
+        
+        console.log("Deltas: ", deltaX, ", ", deltaY);
 
         var maxX = gridPosX * this._cellSize - x1;
         var maxY = gridPosY * this._cellSize - y1;
+        
+        console.log("DDA: maxX, maxY offets: ", maxX, ", ", maxY);
         
         if (dirX >= 0) {
             maxX += this._cellSize;
@@ -49,13 +78,23 @@ Crafty.c("DDAMap", {
             maxY += this._cellSize;
         }
         
+        console.log("DDA: maxX, maxY w/ cellSize added: ", maxX, ", ", maxY);
+        
         maxX /= dirX;
         maxY /= dirY;
+        
+        console.log("Divide maxX/maxY by dir: ", maxX, ", ", maxY);
 
         var stepX = dirX < 0 ? -1 : 1;
         var stepY = dirY < 0 ? -1 : 1;
         var gridGoalX = Math.floor(x2 / this._cellSize);
         var gridGoalY = Math.floor(y2 / this._cellSize);
+        
+        var xError = 0,
+            yError = 0;
+        
+        // DEBUG CODE:
+        this.refresh();
         
         while ((gridPosX != gridGoalX || gridPosY != gridGoalY)) {
             if (maxX < maxY) {
@@ -66,6 +105,23 @@ Crafty.c("DDAMap", {
                 maxY += deltaY;
                 gridPosY += stepY;
             }
+            
+            // Error checking
+            if(xError > 0.5 || xError < -0.5) {
+                // Shift position over and reset xError
+                // xError += 
+            } else {
+                // Increment error.
+            }
+            
+            // Error checking
+            if(yError > 0.5 || yError < -0.5) {
+                // Shift position over and reset xError
+            } else {
+                // Increment error.
+            }
+            
+            console.log("DDA: Iterating; maxX/maxY = ", maxX, ", ", maxY);
             
             // Out of bounds.  Return cell list.
             if (!this.inBounds(gridPosX, gridPosY)) {
@@ -81,7 +137,11 @@ Crafty.c("DDAMap", {
             
             // No collision found.  Add cell to list.
             else {
-                returnList.push(this.getCell(gridPosX, gridPosY));
+                var c = this.getCell(gridPosX, gridPosY);
+                returnList.push(c);
+                
+                // DEBUG CODE
+                c.color("#ccc");
             }
         }
         
@@ -90,6 +150,41 @@ Crafty.c("DDAMap", {
         
         // Return results!
         return returnList;
+    },
+    
+    diag: function (startCell, xSlope, ySlope) {
+        var exit   = false,
+            xCount = startCell.cellX,
+            yCount = startCell.cellY;
+            xInc   = xSlope > 0 ? 1 : -1,
+            yInc   = ySlope > 0 ? 1 : -1,
+            path   = [false];
+        
+        var ctr = 0;
+        while(!exit) {
+            // SAFETY COUNTER: REMOVE THIS EVENTUALLY!
+            ctr++;
+            if(ctr>200) exit = false;
+            
+            // We are no longer in bounds!
+            if(!this.inBounds(xCount, yCount)) {
+                return path;
+            }
+            
+            // If I can't see through it, return path.
+            if(!this.isTransparent(xCount, yCount)) {
+                return path;
+            }
+            
+            // Add that cell to the path!
+            path.push(this.getCell(xCount, yCount));
+            xCount++;
+            yCount++;
+        }
+        
+        //
+        path[0] = true;
+        return path;
     },
     
     lineOfSight: function (cell1, cell2, max, fullPath) {
