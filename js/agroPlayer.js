@@ -14,7 +14,7 @@ Crafty.c("AgroPlayer", {
     _targetPath: null,
     
     // How far can this entity see?
-    _sightRadius: 10,
+    _sightRadius: 20,
     
     updateAgroPlayer: function () {
         

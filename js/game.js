@@ -113,7 +113,7 @@ function START_GAME () {
 
     // var e1 = Crafty.newFactoryEntity("Enemy");
     var e1 = Enemy();
-    GAME.map.addActor(10, 6, e1);
+    GAME.map.addActor(15, 6, e1);
     
     /*
     // var e2 = Crafty.newFactoryEntity("Enemy");
