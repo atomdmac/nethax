@@ -58,10 +58,11 @@ Crafty.c("MapEntity", {
 // -----------------------------------------------------------------------------
 Crafty.c("Slide", {
     slide: function () {
-        this.tween({
-            "x": this.cell.x,
-            "y": this.cell.y
-        }, GAME.settings.turnDuration);
+        var props = {};
+        if (this.x != this.cell.x) props.x = this.cell.x;
+        if (this.y != this.cell.y) props.y = this.cell.y;
+        
+        this.tween(props, GAME.settings.turnDuration);
         
         // TODO: SlideMove event will be more important once diagonal movement is implemented (make sure entity movements doesn't cross).
         /*
