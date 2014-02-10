@@ -7,7 +7,7 @@ function START_GAME () {
         viewW: 20,
         viewH: 20,
         cellSize: 16,
-        turnDuration: 10
+        turnDuration: 400
     };
     
     // A place to store statistics.
