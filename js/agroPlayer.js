@@ -18,7 +18,17 @@ Crafty.c("AgroPlayer", {
     
     updateAgroPlayer: function () {
         
-        // Do we notice the player?  Have we noticed the player already?
+        // If we've noticed the player in the past, continue to move toward the
+        // spot where we last saw them.
+        if (this._targetPath.length != 0) {
+            var motionDirection = this._agroMoveTo(this._targetPath[0]);
+            if(this.motion(motionDirection)){
+                this._targetPath.shift()
+            }
+        }
+        
+        // Can we see the player from our current position?  If so, update our
+        // path/memory of where they were last seen.
         var agroCheck = this._agroNoticeCheck()
         if (agroCheck) {
             
@@ -28,33 +38,24 @@ Crafty.c("AgroPlayer", {
                 this._targetPath.shift();
             }
             
-            // If this is the last place we saw the target, give up.
-            // TODO: I don't know if we need this anymore since the same check is done by _agroNoticeCheck().
-            if(this._targetPath.length == 0) {
-                return;
-            }
-            
-            // If the path is not blocked, move toward the target.
-            var motionDirection = this._agroMoveTo(this._targetPath[0]);
-            // console.log("Motion Direction: ", motionDirection);
-            // console.log("path            : ", this._targetPath);
-            if(this.motion(motionDirection)){
-                this._targetPath.shift()
-            }
-            
             // If the path is blocked, increase the wait counter.
             else {
                 this._waitCount++;
             }
             
+            return true;
+            
+        } else {
+            return false;
         }
-        
+        /*
         // If the wait counter is over our wait tolerance:
         if (this._waitCount >= this._waitTolerance) {
             this._waitCount = 0;
             this._targetPath = [];
             // TODO: Waiting should affect behavior.  Ex. Wander if hero is not visible.
         }
+        */
     },
     
     _agroMoveTo: function (cell) {
