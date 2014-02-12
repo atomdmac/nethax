@@ -11,7 +11,10 @@ function Enemy () {
         // TODO: Do other stuff besides just move randomly.
         // this.randomMove();
         // this.updateSight();
-        this.updateAgroPlayer();
+        var isAgro = this.updateAgroPlayer();
+        if (!isAgro) {
+            this.randomMove();
+        }
     }
     
     return e;
