@@ -36,13 +36,28 @@ function START_GAME () {
     GAME.tick = function () {
         // Update all actors.
         var actors = GAME.map.actors;
-        for (var i=0; i<actors.length; i++) {
+        for (var i=0, len = actors.length; i<actors.length; i++) {
             actors[i].tick();
+        }
+        
+        var notify = GAME.tickNotify, cur;
+        for (var i = 0, len = notify.length; i<len; i++) {
+            cur = notify[i];
+            cur.func.apply(cur.scope, cur.args);
         }
         
         // DEBUG //
         GAME.player.applyEffects();
     };
+    
+    GAME.tickNotify = [];
+    GAME.notify = function(func, scope, args) {
+        GAME.tickNotify.push({
+            "func": func,
+            "scope": scope || GAME,
+            "args": args || null
+        });
+    }
     
     /*
      * Add an entry to the log for the user to see.
@@ -136,6 +151,9 @@ function START_GAME () {
         health.setScale(0, e.maxHp);
         health.update(e.hp);
     });
+    
+    // Display path.
+    GAME.pathDisplay = new PathDisplay(GAME);
     
     // Test out State component
     
