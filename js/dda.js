@@ -18,7 +18,7 @@ Crafty.c("DotMarker", {
         this.destroy();
     },
     init: function () {
-        this.requires("DOM, 2D, Color");
+        this.requires("Canvas, 2D, Color");
     }
 });
 Crafty.c("DDAMap", {
@@ -37,7 +37,7 @@ Crafty.c("DDAMap", {
             // Assume that we -can't- reach the goal cell.
             returnList = [false];
         
-        console.log("DDA: Starting grid position: ", gridPosX, ", ", gridPosY);
+        // console.log("DDA: Starting grid position: ", gridPosX, ", ", gridPosY);
         
         // Cell contents collidable?
         if (!this.isPassable(gridPosX, gridPosY)) {
@@ -53,7 +53,7 @@ Crafty.c("DDAMap", {
         
         // Is "perfectly" diagonal?
         if (Math.abs(dirX) == Math.abs(dirY)) {
-            console.log("Diagonal!");
+            // console.log("Diagonal!");
             return this.diag(this.getCell(gridPosX, gridPosY), dirX, dirY);
         }
         
@@ -64,12 +64,12 @@ Crafty.c("DDAMap", {
         var deltaX = this._cellSize / Math.abs(dirX);
         var deltaY = this._cellSize / Math.abs(dirY);
         
-        console.log("Deltas: ", deltaX, ", ", deltaY);
+        // console.log("Deltas: ", deltaX, ", ", deltaY);
 
         var maxX = gridPosX * this._cellSize - x1;
         var maxY = gridPosY * this._cellSize - y1;
         
-        console.log("DDA: maxX, maxY offets: ", maxX, ", ", maxY);
+        // console.log("DDA: maxX, maxY offets: ", maxX, ", ", maxY);
         
         if (dirX >= 0) {
             maxX += this._cellSize;
@@ -78,12 +78,12 @@ Crafty.c("DDAMap", {
             maxY += this._cellSize;
         }
         
-        console.log("DDA: maxX, maxY w/ cellSize added: ", maxX, ", ", maxY);
+        // console.log("DDA: maxX, maxY w/ cellSize added: ", maxX, ", ", maxY);
         
         maxX /= dirX;
         maxY /= dirY;
         
-        console.log("Divide maxX/maxY by dir: ", maxX, ", ", maxY);
+        // console.log("Divide maxX/maxY by dir: ", maxX, ", ", maxY);
 
         var stepX = dirX < 0 ? -1 : 1;
         var stepY = dirY < 0 ? -1 : 1;
@@ -121,17 +121,17 @@ Crafty.c("DDAMap", {
                 // Increment error.
             }
             
-            console.log("DDA: Iterating; maxX/maxY = ", maxX, ", ", maxY);
+            // console.log("DDA: Iterating; maxX/maxY = ", maxX, ", ", maxY);
             
             // Out of bounds.  Return cell list.
             if (!this.inBounds(gridPosX, gridPosY)) {
-                console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
+                // console.log("No LOS.  Out of Bounds found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             
             // Collision found.  Return cell list.
             if (!this.isTransparent(gridPosX, gridPosY)) {
-                console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
+                // console.log("No LOS.  Collision found at (", gridPosX, ", ", gridPosY, ")");
                 return returnList;
             }
             
@@ -196,7 +196,7 @@ Crafty.c("DDAMap", {
             ydiff = cell1.cellY - cell2.cellY,
             diag  = Math.sqrt((xdiff * xdiff) + (ydiff * ydiff));
         if(diag > max) {
-            console.log("Out of range! ", diag, " / ", max);
+            // console.log("Out of range! ", diag, " / ", max);
             return false;
         }
         
@@ -239,7 +239,7 @@ Crafty.c("DDAMap", {
     */
 //---------------------------- DEBUG -----------------------------------------//
         /*
-        console.log("DDAMap :: lineOfSight : path = ", path);
+        // console.log("DDAMap :: lineOfSight : path = ", path);
         GAME.map.refresh();
         for(var dda=1; dda<path.length; dda++) {
             path[dda].color("#ccc");

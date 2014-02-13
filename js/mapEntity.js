@@ -34,7 +34,7 @@ Crafty.c("MapEntity", {
     },
     
     init: function () {
-        this.requires("2D, DOM");
+        this.requires("2D, Canvas");
         
         // Getters / Setters.
         this.__defineGetter__("name", function () {return this._name});

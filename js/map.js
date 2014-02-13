@@ -50,7 +50,7 @@ Crafty.c("MapCell", {
     
     init: function () {
         // Dependencies.
-        this.requires("2D, DOM, Color");
+        this.requires("2D, Canvas, Color");
         
         this.__defineGetter__("cellX", function () {return this._cellX});
         this.__defineGetter__("cellY", function () {return this._cellY});
