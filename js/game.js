@@ -146,8 +146,14 @@ function START_GAME () {
             y: 0,
             w: 100,
             h: 20
-        });
+        })
+        .setTitle("Health");
+        
     GAME.player.bind("Hurt", function (e) {
+        health.setScale(0, e.maxHp);
+        health.update(e.hp);
+    });
+    GAME.player.bind("Heal", function (e) {
         health.setScale(0, e.maxHp);
         health.update(e.hp);
     });
@@ -170,7 +176,8 @@ function START_GAME () {
     GAME.player.addEffect("testEffect1", fakeEffect, 10, 1, ["Test Effect 1"]);
     GAME.player.addEffect("testEffect2", fakeEffect, 0, 100, ["Test Effect 2"]);
     // Add rudimentary healing effect.
-    GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
+    // GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
+    GAME.player.heal(0.25, 0, "Iron Heart");
     
     // Follow the player.
     Crafty.viewport.follow(GAME.player, 0, 0);
