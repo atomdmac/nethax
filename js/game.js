@@ -125,20 +125,20 @@ function START_GAME () {
     // DEBUG       //
     // ----------- /
         // Entity factories don't work currently in Crafty.
-
-    // var e1 = Crafty.newFactoryEntity("Enemy");
-    var e1 = Enemy();
-    GAME.map.addActor(15, 6, e1);
-    
-    /*
-    // var e2 = Crafty.newFactoryEntity("Enemy");
-    var e2 = Enemy();
-    GAME.map.addActor(10, 10, e2);
-    
-    // var e3 = Crafty.newFactoryEntity("Enemy");
-    var e3 = Enemy();
-    GAME.map.addActor(15, 2, e3);
-    */
+    var maxNumEnemies = 2, numEnemies = 0;
+    var safe = 0, safeMax = 20;
+    while (numEnemies < maxNumEnemies) {
+        if (safe > safeMax) break;
+        safe++;
+        
+        var xCell = Math.randomInt(0, GAME.map.width),
+            yCell = Math.randomInt(0, GAME.map.height);
+        if (GAME.map.isPassable(xCell, yCell)) {
+            var enemy = new Enemy();
+            GAME.map.addActor(xCell, yCell, enemy);
+            numEnemies++;
+        }
+    }
     
     var health = Crafty.e("ProgressBar")
         .attr({
