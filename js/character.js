@@ -126,15 +126,24 @@ Crafty.c("Character", {
     /*
      * Add the given amount of HP to this entity over the given number of turns.
      */
-    // TODO: Implement healing, especially healing over time while resting.
     heal: function (amount, duration, healer) {
-        // TODO: Implement heal.
-        // TODO: Emit heal event.
+        this.addEffect("heal", this._doHeal, duration, 1, [amount, healer]);
+    },
+    _doHeal: function (amount, healer) {
+        if (this._hp < this._maxHp) {
+            this._hp += amount;
+            this.trigger("Heal", {
+                "maxHp" : this._maxHp,
+                "hp"    : this._hp,
+                "amount": amount,
+                "healer": healer
+            });
+        }
     },
     
     init: function () {
         // Dependencies.
-        this.requires("MapEntity");
+        this.requires("MapEntity, State");
         
         // Getters
         this.__defineGetter__("armor", function () {return this._calcArmor()});
