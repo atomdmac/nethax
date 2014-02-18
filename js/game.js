@@ -7,7 +7,7 @@ function START_GAME () {
         viewW: 20,
         viewH: 20,
         cellSize: 16,
-        turnDuration: 400
+        turnDuration: 200
     };
     
     // A place to store statistics.
@@ -159,7 +159,7 @@ function START_GAME () {
     });
     
     // Display path.
-    GAME.pathDisplay = new PathDisplay(GAME);
+    // GAME.pathDisplay = new PathDisplay(GAME);
     
     // Test out State component
     
