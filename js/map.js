@@ -124,7 +124,13 @@ Crafty.c("Map", {
         
         var self = this;
         function shouldDraw(x, y) {
-            return self.cells[x][y].within(Crafty.viewport.rect());
+            var rect = Crafty.viewport.rect();
+            rect._x -= GAME.settings.cellSize;
+            rect._y -= GAME.settings.cellSize;
+            rect._w += GAME.settings.cellSize*2;
+            rect._h += GAME.settings.cellSize*2;
+
+            return self.cells[x][y].within(rect);
         }
         
         for(var x=0; x<this._colCount; x++) {
