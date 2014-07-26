@@ -35,6 +35,6 @@ Crafty.c("NPC", {
     },
     
     init: function () {
-        this.requires("Character");
+        this.requires("Character, Slide");
     }
 });

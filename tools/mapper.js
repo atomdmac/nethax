@@ -8,12 +8,14 @@ var Mapper = {
     width: 40,
     height: 20,
     cellSize: 16,
-    init: function (data) {
-        var canvas = document.createElement("canvas");
+    init: function (canvas) {
+        if (!canvas) {
+            canvas = document.createElement("canvas");
+            document.body.appendChild(canvas);
+        }
         canvas.setAttribute("width", this.width * this.cellSize);
         canvas.setAttribute("height", this.height * this.cellSize);
         
-        document.body.appendChild(canvas);
         
         var self = this;
         var onDrag = function (e) {
@@ -40,6 +42,7 @@ var Mapper = {
             return false;
         });
         
+        this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.initGrid(this.width, this.height);
     },
@@ -57,9 +60,58 @@ var Mapper = {
     },
     setWidth: function (w) {
         // TODO
+        // Expand width.
+        if (w>this.width) {
+            var xlen = w - this.width,
+                x    = 0;
+            for(; x<xlen; x++) {
+                this.grid.push([]);
+                var ylen = this.height,
+                    y    = 0;
+                for(; y<ylen; y++) {
+                    this.grid[x].push(1);
+                }
+            }
+        }
+        // Reduce width.
+        else if (w < this.width) {
+            this.grid.splice(w, this.width - w);
+        }
+        
+        this.width = typeof w == "number" ? w : this.width;
+        this.canvas.width = this.width * this.cellSize;
+        this.drawGrid(this.ctx);
     },
     setHeight: function (h) {
-        // TODO
+        var xlen, x, ylen, y;
+        
+        // Expand height.
+        if (h>this.height) {
+            xlen = this.grid.length;
+            x    = 0;
+            
+            for(; x<xlen; x++) {
+                ylen = h - this.height;
+                y    = 0;
+                
+                for(; y<ylen; y++) {
+                    this.grid[x].push(1);
+                }
+            }
+        }
+        
+        // Reduce height.
+        else if (h<this.height) {
+            xlen = this.grid.length;
+            
+            for(; x<xlen; x++) {
+                this.grid[x].splice(h, this.height - h);
+            }
+        }
+        
+        this.height = typeof h == "number" ? h : this.height;
+        this.canvas.height = this.height * this.cellSize;
+        this.drawGrid(this.ctx);
     },
     initGrid: function (w, h) {
         this.grid = [];
@@ -83,6 +135,8 @@ var Mapper = {
     },
     drawCell: function (x, y, data) {
         this.ctx.beginPath();
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "#ccc";
         this.ctx.rect(x*this.cellSize, y*this.cellSize, this.cellSize, this.cellSize);
         
         if(data === 0) {
@@ -94,7 +148,7 @@ var Mapper = {
         this.ctx.stroke();
     },
     exportData: function () {
-        console.log(JSON.stringify(this.grid));
+        return JSON.stringify(this.grid);
     },
     importData: function (data) {
         this.grid = data;

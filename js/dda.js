@@ -141,7 +141,7 @@ Crafty.c("DDAMap", {
                 returnList.push(c);
                 
                 // DEBUG CODE
-                c.color("#ccc");
+                // c.color("#ccc");
             }
         }
         

@@ -105,80 +105,85 @@ function START_GAME () {
     
     // Initialize map.
     GAME.map = Crafty.e("DDAMap");
-    GAME.map.parse(sampleMap, GAME.settings.cellSize);
     
-    // Initialize player.
-    
-    // Entity factories don't work currently in Crafty.
-    // GAME.player = Crafty.newFactoryEntity("Player");
-    GAME.player = Player();
-    GAME.map.addActor(2, 2, GAME.player);
-    
-    // Initialize Keyboard Input
-    GAME.keyboard = Crafty.e("KeyboardInput");
-    GAME.keyboard.bind("PlayerAction", function (action) {
-        GAME.tick();
-    });
-    
-    
-    // ----------- //
-    // DEBUG       //
-    // ----------- /
-        // Entity factories don't work currently in Crafty.
-    var maxNumEnemies = 2, numEnemies = 0;
-    var safe = 0, safeMax = 20;
-    while (numEnemies < maxNumEnemies) {
-        if (safe > safeMax) break;
-        safe++;
-        
-        var xCell = Math.randomInt(0, GAME.map.width),
-            yCell = Math.randomInt(0, GAME.map.height);
-        if (GAME.map.isPassable(xCell, yCell)) {
-            var enemy = new Enemy();
-            GAME.map.addActor(xCell, yCell, enemy);
-            numEnemies++;
+    $.ajax({
+        url: "data/test-map50x50.json",
+        success: function (data) {
+            
+            // Initialize map.
+            GAME.map.parse(JSON.parse(data), GAME.settings.cellSize);
+            
+            // Initialize player.
+            GAME.player = Player();
+            GAME.map.addActor(2, 2, GAME.player);
+            
+            // Initialize Keyboard Input
+            GAME.keyboard = Crafty.e("KeyboardInput");
+            GAME.keyboard.bind("PlayerAction", function (action) {
+                GAME.tick();
+            });
+            
+            
+            // ----------- //
+            // DEBUG       //
+            // ----------- /
+                // Entity factories don't work currently in Crafty.
+            var maxNumEnemies = 2, numEnemies = 0;
+            var safe = 0, safeMax = 20;
+            while (numEnemies < maxNumEnemies) {
+                if (safe > safeMax) break;
+                safe++;
+                
+                var xCell = Math.randomInt(0, GAME.map.colCount),
+                    yCell = Math.randomInt(0, GAME.map.rowCount);
+                if (GAME.map.isPassable(xCell, yCell)) {
+                    var enemy = new Enemy();
+                    GAME.map.addActor(xCell, yCell, enemy);
+                    numEnemies++;
+                }
+            }
+            
+            var health = Crafty.e("ProgressBar")
+                .attr({
+                    x: 0,
+                    y: 0,
+                    w: 100,
+                    h: 20
+                })
+                .setTitle("Health");
+                
+            GAME.player.bind("Hurt", function (e) {
+                health.setScale(0, e.maxHp);
+                health.update(e.hp);
+            });
+            GAME.player.bind("Heal", function (e) {
+                health.setScale(0, e.maxHp);
+                health.update(e.hp);
+            });
+            
+            // Display path.
+            // GAME.pathDisplay = new PathDisplay(GAME);
+            
+            // Test out State component
+            
+            // Effect callbacks (will be scoped to entity)
+            function fakeEffect (effectName) {
+                // console.log(effectName + " is affecting you!");
+                GAME.log(effectName + "is affecting you!");
+            }
+            function fakeHeal() {
+                if(this._hp < this._maxHp) this._hp++;
+            }
+            
+            // Add some trivial test effects.
+            GAME.player.addEffect("testEffect1", fakeEffect, 10, 1, ["Test Effect 1"]);
+            GAME.player.addEffect("testEffect2", fakeEffect, 0, 100, ["Test Effect 2"]);
+            // Add rudimentary healing effect.
+            // GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
+            GAME.player.heal(0.25, 0, "Iron Heart");
+            
+            // Follow the player.
+            Crafty.viewport.follow(GAME.player, 0, 0);
         }
-    }
-    
-    var health = Crafty.e("ProgressBar")
-        .attr({
-            x: 0,
-            y: 0,
-            w: 100,
-            h: 20
-        })
-        .setTitle("Health");
-        
-    GAME.player.bind("Hurt", function (e) {
-        health.setScale(0, e.maxHp);
-        health.update(e.hp);
     });
-    GAME.player.bind("Heal", function (e) {
-        health.setScale(0, e.maxHp);
-        health.update(e.hp);
-    });
-    
-    // Display path.
-    // GAME.pathDisplay = new PathDisplay(GAME);
-    
-    // Test out State component
-    
-    // Effect callbacks (will be scoped to entity)
-    function fakeEffect (effectName) {
-        // console.log(effectName + " is affecting you!");
-        GAME.log(effectName + "is affecting you!");
-    }
-    function fakeHeal() {
-        if(this._hp < this._maxHp) this._hp++;
-    }
-    
-    // Add some trivial test effects.
-    GAME.player.addEffect("testEffect1", fakeEffect, 10, 1, ["Test Effect 1"]);
-    GAME.player.addEffect("testEffect2", fakeEffect, 0, 100, ["Test Effect 2"]);
-    // Add rudimentary healing effect.
-    // GAME.player.addEffect("fakeHeal", fakeHeal, 0, 10);
-    GAME.player.heal(0.25, 0, "Iron Heart");
-    
-    // Follow the player.
-    Crafty.viewport.follow(GAME.player, 0, 0);
 }

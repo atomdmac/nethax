@@ -5,12 +5,35 @@
     <script type="text/javascript" src="mapper.js"></script>
     <script type="text/javascript">
     function init() {
-        Mapper.init();
+        Mapper.init(document.getElementById("stage"));
         Mapper.drawGrid();
+        
+        var exportBtn = document.getElementById("export-btn"),
+            importBtn = document.getElementById("import-btn"),
+            txt       = document.getElementById("text-input-txt");
+            
+        importBtn.addEventListener("click", function (e) {
+            var input = JSON.parse(txt.value);
+            console.log(input);
+            Mapper.importData(input);
+        });
+        exportBtn.addEventListener("click", function (e) {
+            var output = JSON.stringify( Mapper.exportData() )
+                    .replace(/^"|"$/g, "");
+            
+            console.log(output);
+            
+            txt.value = output;
+        });
     }
     </script>
 </head>
 <body onload="init();">
-    
+    <canvas id="stage"></canvas>
+    <br />
+    <button id="export-btn">Export</button>
+    <button id="import-btn">Import</button>
+    <br />
+    <textarea id="text-input-txt"></textarea>
 </body>
 </html>
