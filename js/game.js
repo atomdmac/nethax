@@ -4,7 +4,7 @@ function START_GAME () {
     
     // Settings.
     GAME.settings = {
-        viewW: 20,
+        viewW: 40,
         viewH: 20,
         cellSize: 16,
         turnDuration: 200
@@ -128,7 +128,7 @@ function START_GAME () {
             // DEBUG       //
             // ----------- /
                 // Entity factories don't work currently in Crafty.
-            var maxNumEnemies = 2, numEnemies = 0;
+            var maxNumEnemies = 4, numEnemies = 0;
             var safe = 0, safeMax = 20;
             while (numEnemies < maxNumEnemies) {
                 if (safe > safeMax) break;
