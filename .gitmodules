@@ -1,0 +1,3 @@
+[submodule "js/lib/crafty"]
+	path = js/lib/crafty
+	url = https://github.com/craftyjs/Crafty.git
