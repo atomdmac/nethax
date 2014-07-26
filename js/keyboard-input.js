@@ -70,16 +70,16 @@ Crafty.c("KeyboardInput", {
         
         if(e) {        
             // Auto-Attack Keys
-            if(e.key == keys["UP_ARROW"] || e.key == keys["K"]) {
+            if(e.key == keys["NUMPAD_8"] || e.key == keys["K"]) {
                 action = this._autoAttack("N");
             }
-            else if(e.key == keys["DOWN_ARROW"] || e.key == keys["J"]) {
+            else if(e.key == keys["NUMPAD_2"] || e.key == keys["J"]) {
                 action = this._autoAttack("S");
             }
-            else if(e.key == keys["LEFT_ARROW"] || e.key == keys["H"]) {
+            else if(e.key == keys["NUMPAD_4"] || e.key == keys["H"]) {
                 action = this._autoAttack("W");
             }
-            else if(e.key == keys["RIGHT_ARROW"] || e.key == keys["L"]) {
+            else if(e.key == keys["NUMPAD_6"] || e.key == keys["L"]) {
                 action = this._autoAttack("E");
             }
             // End Auto-Attack Keys
@@ -113,35 +113,35 @@ Crafty.c("KeyboardInput", {
         //       we can continue motion if the player is holding any one of
         //       these keys down.  All of the key combos above will only be
         //       fired onKeyDown and will not be fired repeatedly.
-        if (this.isDown(keys["UP_ARROW"]) || this.isDown(keys["K"])) {
+        if (this.isDown(keys["NUMPAD_8"]) || this.isDown(keys["K"])) {
             action = this._player.motion("N");
         }
         
-        else if (this.isDown(keys["Y"])) {
+        else if (this.isDown(keys["NUMPAD_7"]) || this.isDown(keys["Y"])) {
             action = this._player.motion("NW");
         }
         
-        else if (this.isDown(keys["U"])) {
+        else if (this.isDown(keys["NUMPAD_9"]) || this.isDown(keys["U"])) {
             action = this._player.motion("NE");
         }
         
-        else if (this.isDown(keys["DOWN_ARROW"]) || this.isDown(keys["J"])) {
+        else if (this.isDown(keys["NUMPAD_2"]) || this.isDown(keys["J"])) {
             action = this._player.motion("S");
         }
         
-        else if (this.isDown(keys["B"])) {
+        else if (this.isDown(keys["NUMPAD_1"]) || this.isDown(keys["B"])) {
             action = this._player.motion("SW");
         }
         
-        else if (this.isDown(keys["N"])) {
+        else if (this.isDown(keys["NUMPAD_3"]) || this.isDown(keys["N"])) {
             action = this._player.motion("SE");
         }
         
-        else if (this.isDown(keys["LEFT_ARROW"]) || this.isDown(keys["H"])) {
+        else if (this.isDown(keys["NUMPAD_4"]) || this.isDown(keys["H"])) {
             action = this._player.motion("W");
         }
         
-        else if(this.isDown(keys["RIGHT_ARROW"]) || this.isDown(keys["L"])) {
+        else if(this.isDown(keys["NUMPAD_6"]) || this.isDown(keys["L"])) {
             action = this._player.motion("E");
         }
         
