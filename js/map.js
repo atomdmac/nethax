@@ -119,9 +119,6 @@ Crafty.c("Map", {
     },
     
     updateDisplay: function (e) {
-        
-        e.ctx.clearRect(0, 0, 320, 320);
-        
         var self = this;
         function shouldDraw(x, y) {
             var rect = Crafty.viewport.rect();
