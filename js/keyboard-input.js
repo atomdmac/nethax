@@ -92,7 +92,7 @@ Crafty.c("KeyboardInput", {
             // End Attack Keys
             
             // Rest Key
-            if (e.key == keys["PERIOD"]) {
+            if (e.key == keys["PERIOD"] || e.key == keys['NUMPAD_0']) {
                 // TODO: Heal player
                 this._doTick();
                 return;
