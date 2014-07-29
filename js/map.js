@@ -4,31 +4,30 @@ var sampleMap = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,
 // -----------------------------------------------------------------------------
 // Map Cell Component
 // -----------------------------------------------------------------------------
-Crafty.c("MapCell", {
-    passable: false,
-    actor : null,
-    items : [],
-    _cellX : null,
-    _cellY : null,
+var MapCell = function () {
+    var passable = false,
+        actor  = null,
+        items  = [],
+        x = 0,
+        y = 0,
+        w = 0,
+        h = 0,
+        _cellX  = null,
+        _cellY  = null;
     
-    update: function (x, y) {
+    this.update = function (x, y) {
         // Update internal map location data (if given);
         if(x!==undefined) {
-            this._cellX = x;
+            _cellX = x;
         }
         if(y!==undefined) {
-            this._cellY = y;
+            _cellY = y;
         }
-    },
-    
-    init: function () {
-        // Dependencies.
-        this.requires("2D");
+    };
         
-        this.__defineGetter__("cellX", function () {return this._cellX});
-        this.__defineGetter__("cellY", function () {return this._cellY});
-    }
-});
+    this.__defineGetter__("cellX", function () {return _cellX; });
+    this.__defineGetter__("cellY", function () {return _cellY; });
+};
 
 // -----------------------------------------------------------------------------
 // Map Component
@@ -73,16 +72,14 @@ Crafty.c("Map", {
             
             for (y=0; y<ylen; y++) {
                 
-                var newCell = Crafty.e("MapCell");
-                newCell.passable = mapData[x][y] == 0 ? false : true;
-                newCell.actor = null;
-                newCell.items = []; // TODO: Add items.
-                newCell.attr({
-                    "w": cellSize,
-                    "h": cellSize,
-                    "x": x * cellSize,
-                    "y": y * cellSize
-                });
+                var newCell = new MapCell();
+                newCell.passable = mapData[x][y] === 0 ? false : true;
+                newCell.actor = null,
+                newCell.items = [];
+                newCell.x = x * cellSize;
+                newCell.y = y * cellSize;
+                newCell.w = cellSize;
+                newCell.h = cellSize;
                 newCell.update(x, y);
                 
                 this.cells[x].push(newCell);
@@ -118,37 +115,42 @@ Crafty.c("Map", {
         }
     },
     
-    updateDisplay: function (e) {
-        var self = this;
-        function shouldDraw(x, y) {
-            var rect = Crafty.viewport.rect();
-            rect._x -= GAME.settings.cellSize;
-            rect._y -= GAME.settings.cellSize;
-            rect._w += GAME.settings.cellSize*2;
-            rect._h += GAME.settings.cellSize*2;
+    _shouldDraw: function (x, y) {
+        var size = GAME.settings.cellSize,
+            rect = Crafty.viewport.rect();
+        if(x * size < rect._x - size) return false;
+        if(x * size > rect._x + rect._w) return false;
+        if(y * size < rect._y - size) return false;
+        if(y * size > rect._y + rect._h) return false;
+        return true;
+    },
 
-            return self.cells[x][y].within(rect);
-        }
-        
+    updateDisplay: function (e) {
         for(var x=0; x<this._colCount; x++) {
             for(var y=0; y<this._rowCount; y++) {
                 this.cells[x][y].update();
                 
-                if (!shouldDraw(x, y)) continue;
+                if (!this._shouldDraw(x, y)) continue;
                 this._drawCell(e, this.cells[x][y]);
             }
         }
     },
+
     _drawCell: function (e, cell) {
         if (cell.passable) {
             e.ctx.fillStyle = "#ffffff";
         } else {
             e.ctx.fillStyle = "#000";
         }
+
+        var view = Crafty.viewport,
+            x    = cell.x - view.x;
+            y    = cell.y - view.y;
+
         //e.ctx.save();
         //e.ctx.translate(e.pos._x, e.pos._y);
         e.ctx.beginPath();
-        e.ctx.rect(cell._x, cell._y, cell._w, cell._h);
+        e.ctx.rect(cell.x, cell.y, cell.w, cell.h);
         e.ctx.fill();
         //e.ctx.restore();
     },
@@ -218,7 +220,12 @@ Crafty.c("Map", {
     
     getCell: function (x, y) {
         if (this.inBounds(x, y)) {
-            return this.cells[x][y];
+            try {
+
+                return this.cells[x][y];
+            } catch (e) {
+                debugger;
+            }
         }
         return undefined;
     },
@@ -242,9 +249,9 @@ Crafty.c("Map", {
             pos = {
                 "x": x,
                 "y": y
-            }
+            };
         }
-        if(this._colCount < x || this._rowCount < y) {
+        if(this._colCount - 1 < x || this._rowCount - 1 < y) {
             return false;
         }
         // Passed all checks.  Looks good! <thumbsup/>
@@ -291,14 +298,18 @@ Crafty.c("Map", {
      */
     isTransparent: function (x, y) {
         // TODO: Add separate cell property to transparency instead of using passability to determine.
-        if(this.inBounds(x, y)) {
-            var c = this.cells[x][y];
-            if(c.passable === true) {
-                return true;
+        try {
+            if(this.inBounds(x, y)) {
+                var c = this.cells[x][y];
+                if(c.passable === true) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
-            else {
-                return false;
-            }
+        } catch (e) {
+            debugger;
         }
         return false;
     },
